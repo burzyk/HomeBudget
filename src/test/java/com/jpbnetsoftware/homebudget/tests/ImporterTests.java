@@ -7,6 +7,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import scala.collection.immutable.List;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -58,10 +62,7 @@ public class ImporterTests {
         Assert.assertEquals(-5.0, operations.apply(3).getAmount(), 0.001);
     }
 
-    private Date getDate(int year, int month, int day) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, day);
-
-        return calendar.getTime();
+    private LocalDate getDate(int year, int month, int day) {
+        return LocalDate.of(year, month, day);
     }
 }
