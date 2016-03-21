@@ -1,8 +1,12 @@
 package com.jpbnetsoftware.homebudget
 
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+
 /**
   * Created by pburzynski on 21/03/2016.
   */
-object Application {
-  def main(args: Array[String]) = println("hello world")
+@SpringBootApplication
+class Application {
+  def startup(args: Array[String]): Unit = SpringApplication.run(getClass)
 }
