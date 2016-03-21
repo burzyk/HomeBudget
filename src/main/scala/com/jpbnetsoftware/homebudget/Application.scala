@@ -8,5 +8,5 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
   */
 @SpringBootApplication
 class Application {
-  def startup(args: Array[String]): Unit = SpringApplication.run(getClass)
+  def startup(args: Array[String]): Unit = SpringApplication.run(Array[AnyRef](getClass), args)
 }
