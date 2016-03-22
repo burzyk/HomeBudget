@@ -24,10 +24,14 @@ class StatementController {
   @BeanProperty
   var statementParser: StatementParser = _
 
+  @Autowired
+  @BeanProperty
+  var userIdProvider: UserIdProvider = _
+
   @RequestMapping(Array[String]("/statement/operations"))
   def getOperations(): OperationsGetDto = {
     val result = new OperationsGetDto
-    result.operations = operationsRepository.getOperations(12)
+    result.operations = operationsRepository.getOperations(userIdProvider.getCurrentUserId)
       .map(x => {
         val r = new OperationDetailsDto
         r.id = x.id
@@ -42,11 +46,12 @@ class StatementController {
 
   @RequestMapping(value = Array[String]("/statement/operations"), method = Array[RequestMethod](RequestMethod.POST))
   def uploadOperations(@RequestBody entity: OperationsUpdateDto): OperationsUpdateResponseDto = {
-    val content = String.valueOf(Base64.getDecoder.decode(entity.content).map(_.toChar))
+    val userId = userIdProvider.getCurrentUserId
+    val content = String.valueOf(Base64.getDecoder.decode(entity.base64Content).map(_.toChar))
     val operations = statementParser.parse(content)
-    val toInsert = operations.filterNot(x => operationsRepository.operationExists(12, x))
+    val toInsert = operations.filterNot(x => operationsRepository.operationExists(userId, x))
 
-    toInsert.foreach(x => operationsRepository.insertOperation(12, x))
+    toInsert.foreach(x => operationsRepository.insertOperation(userId, x))
 
     val result = new OperationsUpdateResponseDto
     result.duplicatesCount = operations.size - toInsert.size

@@ -34,8 +34,8 @@ class QifStatementParser extends StatementParser {
     records(recordId)
   }
 
-  private def extractRecords(context: String): List[Map[Char, String]] = {
-    context
+  private def extractRecords(content: String): List[Map[Char, String]] = {
+    content
       .split("\\^")
       .map(x => x.split("[\\r\\n]+").map(_.trim))
       .map(x => x
