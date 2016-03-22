@@ -1,4 +1,4 @@
-package com.jpbnetsoftware.homebudget.impl
+package com.jpbnetsoftware.homebudget.domain.impl
 
 import java.time.{ZoneOffset, LocalDateTime, LocalDate, Instant}
 import java.time.format.DateTimeFormatter

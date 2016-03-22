@@ -1,9 +1,10 @@
 package com.jpbnetsoftware.homebudget.tests;
 
 import com.jpbnetsoftware.homebudget.data.InMemoryDataRepository;
-import com.jpbnetsoftware.homebudget.impl.QifStatementParser;
+import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
+import com.jpbnetsoftware.homebudget.domain.impl.QifStatementParser;
 import com.jpbnetsoftware.homebudget.service.StatementController;
-import com.jpbnetsoftware.homebudget.service.UserIdProvider;
+import com.jpbnetsoftware.homebudget.service.UserProvider;
 import com.jpbnetsoftware.homebudget.service.dto.OperationDetailsDto;
 import com.jpbnetsoftware.homebudget.service.dto.StatementGetDto;
 import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateDto;
@@ -108,7 +109,7 @@ public class StatementControllerTests {
     public void MultiUserUpdateTest() {
         StatementController controller = this.createController();
 
-        ((MockUserIdProvider)controller.getUserIdProvider()).setUserId(10);
+        ((MockUserProvider) controller.getUserProvider()).setUsername("ala");
 
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
@@ -117,7 +118,7 @@ public class StatementControllerTests {
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
 
-        ((MockUserIdProvider)controller.getUserIdProvider()).setUserId(11);
+        ((MockUserProvider) controller.getUserProvider()).setUsername("kot");
 
         StatementGetDto getResult = controller.getStatement();
 
@@ -129,30 +130,31 @@ public class StatementControllerTests {
 
         controller.setOperationsRepository(new InMemoryDataRepository());
         controller.setStatementParser(new QifStatementParser());
-        controller.setUserIdProvider(new MockUserIdProvider(13));
+        controller.setUserProvider(new MockUserProvider("ala"));
+        controller.setCryptoHelper(new DefaultCryptoHelper());
 
         return controller;
     }
 
-    class MockUserIdProvider implements UserIdProvider {
+    class MockUserProvider implements UserProvider {
 
-        private int userId;
+        private String username;
 
-        public MockUserIdProvider(int userId) {
-            this.userId = userId;
+        public MockUserProvider(String username) {
+            this.username = username;
         }
 
         @Override
-        public int getCurrentUserId() {
-            return this.getUserId();
+        public String getCurrentUsername() {
+            return this.getUsername();
         }
 
-        public int getUserId() {
-            return userId;
+        public String getUsername() {
+            return username;
         }
 
-        public void setUserId(int userId) {
-            this.userId = userId;
+        public void setUsername(String username) {
+            this.username = username;
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.jpbnetsoftware.homebudget.data
 
-import com.jpbnetsoftware.homebudget.domain.BankOperation
+import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, BankOperation}
+import org.springframework.beans.factory.annotation.Autowired
 
+import scala.beans.BeanProperty
 import scala.collection.mutable.HashMap
 
 /**
@@ -9,34 +11,44 @@ import scala.collection.mutable.HashMap
   */
 class InMemoryDataRepository extends OperationsRepository with UsersRepository {
 
-  var operations: HashMap[Int, List[BankOperation]] = HashMap[Int, List[BankOperation]]()
+  @Autowired
+  @BeanProperty
+  var cryptoHelper: CryptoHelper = _
 
-  var users: List[(Int, String)] = List[(Int, String)]()
+  var operations: HashMap[String, List[BankOperation]] = HashMap[String, List[BankOperation]]()
 
-  override def operationExists(userId: Int, operation: BankOperation): Boolean = {
-    operations.contains(userId) && operations(userId).count(_ == operation) != 0
+  var users: List[User] = List[User]()
+
+  override def operationExists(username: String, operation: BankOperation): Boolean = {
+    operations.contains(username) && operations(username).count(_ == operation) != 0
   }
 
-  override def insertOperation(userId: Int, operation: BankOperation): Unit = {
-    if (!operations.contains(userId)) {
-      operations += (userId -> List[BankOperation]())
+  override def insertOperation(username: String, operation: BankOperation): Unit = {
+    if (!operations.contains(username)) {
+      operations += (username -> List[BankOperation]())
     }
 
-    operations(userId) = operation :: operations(userId)
+    operations(username) = operation :: operations(username)
   }
 
-  override def getOperations(userId: Int): List[BankOperation] = {
-    if (!operations.contains(userId)) List[BankOperation]() else operations(userId)
+  override def getOperations(username: String): List[BankOperation] = {
+    if (!operations.contains(username)) List[BankOperation]() else operations(username)
   }
-
-  override def getUserIdByUsername(username: String): Int = users.find(_._2 == username).get._1
 
   override def insertUser(username: String, password: String): Int = {
-    val id = users.length
-    users = (id, username) :: users
+    val id = users.length + 1
+    users = new User(id, username, cryptoHelper.hash(password)) :: users
 
     id
   }
 
-  override def userExists(username: String): Boolean = users.count(_._1 == username) != 0
+  override def userExists(username: String): Boolean = users.count(_.username == username) != 0
+
+  override def userExists(username: String, password: String): Boolean = {
+    users.count(x => x.username == username && x.passwordHash == cryptoHelper.hash(password)) != 0
+  }
+
+  class User(val id: Int, val username: String, val passwordHash: String) {
+  }
+
 }

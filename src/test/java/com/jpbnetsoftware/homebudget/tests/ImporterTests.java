@@ -2,12 +2,10 @@ package com.jpbnetsoftware.homebudget.tests;
 
 import com.jpbnetsoftware.homebudget.domain.BankOperation;
 import com.jpbnetsoftware.homebudget.domain.StatementParser;
-import com.jpbnetsoftware.homebudget.impl.QifStatementParser;
+import com.jpbnetsoftware.homebudget.domain.impl.QifStatementParser;
 import org.junit.Assert;
 import org.junit.Test;
 import scala.collection.immutable.List;
-
-import java.time.LocalDate;
 
 /**
  * Created by pburzynski on 21/03/2016.
