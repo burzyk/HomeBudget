@@ -14,16 +14,14 @@ class QifStatementParser extends StatementParser {
       LocalDate.from(DateTimeFormatter.ofPattern("dd/MM/yyyy").parse(value))
     }
 
-    val operations = extractRecords(content).map(x => {
-      val operation = new BankOperation
-      operation.date = parseDate(safeGetRecord(x, 'D'))
-      operation.description = safeGetRecord(x, 'P')
-      operation.amount = safeGetRecord(x, 'T').toDouble
-
-      operation
-    })
-
-    operations.sortWith((o1, o2) => o1.date.isBefore(o2.date))
+    extractRecords(content)
+      .map(x => new BankOperation(
+        0,
+        parseDate(safeGetRecord(x, 'D')),
+        safeGetRecord(x, 'P'),
+        safeGetRecord(x, 'T').toDouble
+      ))
+      .sortWith((o1, o2) => o1.date.isBefore(o2.date))
   }
 
   private def safeGetRecord(records: Map[Char, String], recordId: Char): String = {

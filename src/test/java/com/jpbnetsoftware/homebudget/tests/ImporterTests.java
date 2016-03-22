@@ -109,21 +109,21 @@ public class ImporterTests {
 
         Assert.assertEquals(4, operations.size());
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 8, 15), operations.apply(0).getDate());
-        Assert.assertEquals("BP GLEDHOW S/STN CD XXXX", operations.apply(0).getDescription());
-        Assert.assertEquals(-58.96, operations.apply(0).getAmount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 8, 15), operations.apply(0).date());
+        Assert.assertEquals("BP GLEDHOW S/STN CD XXXX", operations.apply(0).description());
+        Assert.assertEquals(-58.96, operations.apply(0).amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 8, 16), operations.apply(1).getDate());
-        Assert.assertEquals("O2 UK PAY & GO CD XXXX", operations.apply(1).getDescription());
-        Assert.assertEquals(-15.0, operations.apply(1).getAmount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 8, 16), operations.apply(1).date());
+        Assert.assertEquals("O2 UK PAY & GO CD XXXX", operations.apply(1).description());
+        Assert.assertEquals(-15.0, operations.apply(1).amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 8, 17), operations.apply(2).getDate());
-        Assert.assertEquals("TESCO STORE 2808 CD XXXX", operations.apply(2).getDescription());
-        Assert.assertEquals(-36.99, operations.apply(2).getAmount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 8, 17), operations.apply(2).date());
+        Assert.assertEquals("TESCO STORE 2808 CD XXXX", operations.apply(2).description());
+        Assert.assertEquals(-36.99, operations.apply(2).amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 8, 20), operations.apply(3).getDate());
-        Assert.assertEquals("SUBWAY 26852 CD XXXX", operations.apply(3).getDescription());
-        Assert.assertEquals(-5.0, operations.apply(3).getAmount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 8, 20), operations.apply(3).date());
+        Assert.assertEquals("SUBWAY 26852 CD XXXX", operations.apply(3).description());
+        Assert.assertEquals(-5.0, operations.apply(3).amount(), 0.001);
     }
 
 
