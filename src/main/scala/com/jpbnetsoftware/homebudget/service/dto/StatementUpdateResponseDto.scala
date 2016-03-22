@@ -5,7 +5,7 @@ import scala.beans.BeanProperty
 /**
   * Created by pburzynski on 21/03/2016.
   */
-class StatementUpdateResponseDto {
-  @BeanProperty var insertedCount: Int = _
-  @BeanProperty var duplicatesCount: Int = _
+class StatementUpdateResponseDto(
+                                  @BeanProperty var insertedCount: Int,
+                                  @BeanProperty var duplicatesCount: Int) {
 }

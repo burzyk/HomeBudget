@@ -7,9 +7,9 @@ import scala.beans.BeanProperty
 /**
   * Created by pburzynski on 21/03/2016.
   */
-class OperationDetailsDto {
-  @BeanProperty var id: Int = _
-  @BeanProperty var date: LocalDate = _
-  @BeanProperty var description: String = _
-  @BeanProperty var amount: Double = _
+class OperationDetailsDto(
+                           @BeanProperty var id: Int,
+                           @BeanProperty var date: LocalDate,
+                           @BeanProperty var description: String,
+                           @BeanProperty var amount: Double) {
 }

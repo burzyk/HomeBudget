@@ -5,6 +5,7 @@ import java.util.Base64
 import com.jpbnetsoftware.homebudget.data.OperationsRepository
 import com.jpbnetsoftware.homebudget.domain.StatementParser
 import com.jpbnetsoftware.homebudget.service.dto.{StatementGetDto, OperationDetailsDto, StatementUpdateDto, StatementUpdateResponseDto}
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.{RequestBody, RequestMapping, RequestMethod, RestController}
 
@@ -30,18 +31,9 @@ class StatementController {
 
   @RequestMapping(Array[String]("/statement"))
   def getStatement(): StatementGetDto = {
-    val result = new StatementGetDto
-    result.operations = operationsRepository.getOperations(userIdProvider.getCurrentUserId)
-      .map(x => {
-        val r = new OperationDetailsDto
-        r.id = x.id
-        r.description = x.description
-        r.date = x.date
-        r.amount = x.amount
-        r
-      })
-      .asJava
-    result
+    new StatementGetDto(operationsRepository.getOperations(userIdProvider.getCurrentUserId)
+      .map(x => new OperationDetailsDto(x.id, x.date, x.description, x.amount))
+      .asJava)
   }
 
   @RequestMapping(value = Array[String]("/statement"), method = Array[RequestMethod](RequestMethod.POST))
@@ -53,10 +45,6 @@ class StatementController {
 
     toInsert.foreach(x => operationsRepository.insertOperation(userId, x))
 
-    val result = new StatementUpdateResponseDto
-    result.duplicatesCount = operations.size - toInsert.size
-    result.insertedCount = toInsert.size
-
-    result
+    new StatementUpdateResponseDto(toInsert.size, operations.size - toInsert.size)
   }
 }
