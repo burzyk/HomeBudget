@@ -41,8 +41,9 @@ class QifStatementParser extends StatementParser {
       .map(x => x
         .filterNot(_.startsWith("!"))
         .filterNot(_.isEmpty)
-        .map(l => Map[Char, String](l.charAt(0) -> l.substring(1)))
-        .reduce((acc, c) => acc ++ c))
+        .map(l => (l.charAt(0) -> l.substring(1)))
+        .toMap)
+      .filterNot(_.isEmpty)
       .toList
   }
 }

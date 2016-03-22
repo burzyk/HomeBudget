@@ -7,12 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import scala.collection.immutable.List;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by pburzynski on 21/03/2016.
@@ -38,10 +33,56 @@ public class ImporterTests {
             "T-58.96\n" +
             "^";
 
+    private final String emptyStatement = "!Type:Bank\n";
+
+    private final String testStatementWithBlank = "" +
+            "" +
+            "" +
+            "!Type:Bank\n" +
+            "D20/08/2012\n" +
+            "PSUBWAY 26852 CD XXXX \n" +
+            "T-5.00\n" +
+            "" +
+            "^\n" +
+            "D17/08/2012\n" +
+            "PTESCO STORE 2808 CD XXXX \n" +
+            "T-36.99\n" +
+            "^\n" +
+            "D16/08/2012\n" +
+            "" +
+            "PO2 UK PAY & GO CD XXXX \n" +
+            "T-15.00\n" +
+            "^\n" +
+            "D15/08/2012\n" +
+            "" +
+            "" +
+            "PBP GLEDHOW S/STN CD XXXX \n" +
+            "T-58.96\n" +
+            "^" +
+            "" +
+            "";
+
     @Test
-    public void QifStatementParserSimpleTest() {
+    public void QifStatementParserEmptyStatementTest() {
         StatementParser parser = new QifStatementParser();
-        List<BankOperation> operations = parser.parse(testStatement).toList();
+        List<BankOperation> operations = parser.parse(emptyStatement).toList();
+
+        Assert.assertEquals(0, operations.size());
+    }
+
+    @Test
+    public void QifStatementParserSimpleStatementTest() {
+        QifStatementParserSimpleTest(testStatement);
+    }
+
+    @Test
+    public void QifStatementParserSimpleStatementWithBlanksTest() {
+        QifStatementParserSimpleTest(testStatementWithBlank);
+    }
+
+    private void QifStatementParserSimpleTest(String statement) {
+        StatementParser parser = new QifStatementParser();
+        List<BankOperation> operations = parser.parse(statement).toList();
 
         Assert.assertEquals(4, operations.size());
 
