@@ -22,7 +22,7 @@ public class StatementControllerTests {
     private final String testStatement = "IVR5cGU6QmFuaw0KRDIwLzA4LzIwMTINClBTVUJXQVkgMjY4NTIgQ0QgWFhYWCANClQtNS4wMA0KXg0KRDE2LzA4LzIwMTINClBPMiBVSyBQQVkgJiBHTyBDRCBYWFhYIA0KVC0xNS4wMA0KXg0KDQoNCkQxNy8wOC8yMDEyDQpQVEVTQ08gU1RPUkUgMjgwOCBDRCBYWFhYIA0KVC0zNi45OQ0KXg0KDQpEMTUvMDgvMjAxMg0KUEJQIEdMRURIT1cgUy9TVE4gQ0QgWFhYWCANClQtNTguOTYNCl4=";
 
     @Test
-    public void EmptyGetTest() {
+    public void emptyGetTest() {
         StatementController controller = this.createController();
         StatementGetDto result = controller.getStatement();
 
@@ -30,7 +30,7 @@ public class StatementControllerTests {
     }
 
     @Test
-    public void SimpleUpdateTest() {
+    public void simpleUpdateTest() {
         StatementController controller = this.createController();
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
@@ -42,7 +42,7 @@ public class StatementControllerTests {
     }
 
     @Test
-    public void SimpleUpdateAndGetTest() {
+    public void simpleUpdateAndGetTest() {
         StatementController controller = this.createController();
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
@@ -58,7 +58,7 @@ public class StatementControllerTests {
     }
 
     @Test
-    public void SimpleUpdateAndGetOrderTest() {
+    public void simpleUpdateAndGetOrderTest() {
         StatementController controller = this.createController();
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
@@ -87,7 +87,7 @@ public class StatementControllerTests {
     }
 
     @Test
-    public void DuplicateUpdateTest() {
+    public void duplicateUpdateTest() {
         StatementController controller = this.createController();
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
@@ -106,7 +106,7 @@ public class StatementControllerTests {
     }
 
     @Test
-    public void MultiUserUpdateTest() {
+    public void multiUserUpdateTest() {
         StatementController controller = this.createController();
 
         ((MockUserProvider) controller.getUserProvider()).setUsername("ala");

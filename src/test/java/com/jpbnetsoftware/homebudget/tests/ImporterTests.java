@@ -79,7 +79,7 @@ public class ImporterTests {
             "^\n";
 
     @Test
-    public void QifStatementParserEmptyStatementTest() {
+    public void qifStatementParserEmptyStatementTest() {
         StatementParser parser = new QifStatementParser();
         List<BankOperation> operations = parser.parse(emptyStatement).toList();
 
@@ -87,21 +87,21 @@ public class ImporterTests {
     }
 
     @Test
-    public void QifStatementParserSimpleStatementTest() {
-        QifStatementParserSimpleTest(testStatement);
+    public void qifStatementParserSimpleStatementTest() {
+        qifStatementParserSimpleTest(testStatement);
     }
 
     @Test
-    public void QifStatementParserSimpleStatementWithBlanksTest() {
-        QifStatementParserSimpleTest(testStatementWithBlank);
+    public void qifStatementParserSimpleStatementWithBlanksTest() {
+        qifStatementParserSimpleTest(testStatementWithBlank);
     }
 
     @Test
-    public void QifStatementParserUnorderedStatementTest() {
-        QifStatementParserSimpleTest(unorderedStatement);
+    public void qifStatementParserUnorderedStatementTest() {
+        qifStatementParserSimpleTest(unorderedStatement);
     }
 
-    private void QifStatementParserSimpleTest(String statement) {
+    private void qifStatementParserSimpleTest(String statement) {
         StatementParser parser = new QifStatementParser();
         List<BankOperation> operations = parser.parse(statement).toList();
 
@@ -123,6 +123,4 @@ public class ImporterTests {
         Assert.assertEquals("SUBWAY 26852 CD XXXX", operations.apply(3).description());
         Assert.assertEquals(-5.0, operations.apply(3).amount(), 0.001);
     }
-
-
 }
