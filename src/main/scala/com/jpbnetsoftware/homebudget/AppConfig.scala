@@ -2,15 +2,12 @@ package com.jpbnetsoftware.homebudget
 
 import javax.servlet.Filter
 
-import com.jpbnetsoftware.homebudget.data.{OperationsRepository, InMemoryOperationsRepository}
+import com.jpbnetsoftware.homebudget.data.{InMemoryDataRepository, OperationsRepository, UsersRepository}
 import com.jpbnetsoftware.homebudget.domain.StatementParser
 import com.jpbnetsoftware.homebudget.impl.QifStatementParser
 import com.jpbnetsoftware.homebudget.service._
-import org.apache.commons.logging.{LogFactory, Log}
-import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.{ConfigurableApplicationContext, ApplicationContext}
-import org.springframework.context.annotation.{Scope, ScopedProxyMode, Bean}
+import org.springframework.context.annotation.{Bean, Scope, ScopedProxyMode}
 
 /**
   * Created by pburzynski on 21/03/2016.
@@ -19,7 +16,19 @@ import org.springframework.context.annotation.{Scope, ScopedProxyMode, Bean}
 class AppConfig {
 
   @Bean
-  def operationsRepository(): OperationsRepository = new InMemoryOperationsRepository()
+  @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+  def operationsRepository(): OperationsRepository = {
+    Application.applicationContext.getBean("dataRepository").asInstanceOf[OperationsRepository]
+  }
+
+  @Bean
+  @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+  def usersRepository(): UsersRepository = {
+    Application.applicationContext.getBean("dataRepository").asInstanceOf[UsersRepository]
+  }
+
+  @Bean
+  def dataRepository(): InMemoryDataRepository = new InMemoryDataRepository()
 
   @Bean
   def statementParser(): StatementParser = new QifStatementParser()
