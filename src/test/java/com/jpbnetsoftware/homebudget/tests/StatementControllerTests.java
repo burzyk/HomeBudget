@@ -5,9 +5,9 @@ import com.jpbnetsoftware.homebudget.impl.QifStatementParser;
 import com.jpbnetsoftware.homebudget.service.StatementController;
 import com.jpbnetsoftware.homebudget.service.UserIdProvider;
 import com.jpbnetsoftware.homebudget.service.dto.OperationDetailsDto;
-import com.jpbnetsoftware.homebudget.service.dto.OperationsGetDto;
-import com.jpbnetsoftware.homebudget.service.dto.OperationsUpdateDto;
-import com.jpbnetsoftware.homebudget.service.dto.OperationsUpdateResponseDto;
+import com.jpbnetsoftware.homebudget.service.dto.StatementGetDto;
+import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateDto;
+import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateResponseDto;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public class StatementControllerTests {
     @Test
     public void EmptyGetTest() {
         StatementController controller = this.createController();
-        OperationsGetDto result = controller.getOperations();
+        StatementGetDto result = controller.getStatement();
 
         Assert.assertEquals(0, result.getOperations().size());
     }
@@ -31,10 +31,10 @@ public class StatementControllerTests {
     @Test
     public void SimpleUpdateTest() {
         StatementController controller = this.createController();
-        OperationsUpdateDto request = new OperationsUpdateDto();
-        request.setBase64Content(testStatement);
+        StatementUpdateDto request = new StatementUpdateDto();
+        request.setBase64QifOperations(testStatement);
 
-        OperationsUpdateResponseDto result = controller.uploadOperations(request);
+        StatementUpdateResponseDto result = controller.updateStatement(request);
 
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
@@ -43,15 +43,15 @@ public class StatementControllerTests {
     @Test
     public void SimpleUpdateAndGetTest() {
         StatementController controller = this.createController();
-        OperationsUpdateDto request = new OperationsUpdateDto();
-        request.setBase64Content(testStatement);
+        StatementUpdateDto request = new StatementUpdateDto();
+        request.setBase64QifOperations(testStatement);
 
-        OperationsUpdateResponseDto result = controller.uploadOperations(request);
+        StatementUpdateResponseDto result = controller.updateStatement(request);
 
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
 
-        OperationsGetDto getResult = controller.getOperations();
+        StatementGetDto getResult = controller.getStatement();
 
         Assert.assertEquals(4, getResult.getOperations().size());
     }
@@ -59,11 +59,11 @@ public class StatementControllerTests {
     @Test
     public void SimpleUpdateAndGetOrderTest() {
         StatementController controller = this.createController();
-        OperationsUpdateDto request = new OperationsUpdateDto();
-        request.setBase64Content(testStatement);
+        StatementUpdateDto request = new StatementUpdateDto();
+        request.setBase64QifOperations(testStatement);
 
-        controller.uploadOperations(request);
-        OperationsGetDto getResult = controller.getOperations();
+        controller.updateStatement(request);
+        StatementGetDto getResult = controller.getStatement();
         List<OperationDetailsDto> operations = getResult.getOperations();
 
         Assert.assertEquals(4, operations.size());
@@ -88,18 +88,18 @@ public class StatementControllerTests {
     @Test
     public void DuplicateUpdateTest() {
         StatementController controller = this.createController();
-        OperationsUpdateDto request = new OperationsUpdateDto();
-        request.setBase64Content(testStatement);
+        StatementUpdateDto request = new StatementUpdateDto();
+        request.setBase64QifOperations(testStatement);
 
-        OperationsUpdateResponseDto result = controller.uploadOperations(request);
+        StatementUpdateResponseDto result = controller.updateStatement(request);
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
 
-        result = controller.uploadOperations(request);
+        result = controller.updateStatement(request);
         Assert.assertEquals(0, result.getInsertedCount());
         Assert.assertEquals(4, result.getDuplicatesCount());
 
-        OperationsGetDto getResult = controller.getOperations();
+        StatementGetDto getResult = controller.getStatement();
 
         Assert.assertEquals(4, getResult.getOperations().size());
     }
@@ -110,16 +110,16 @@ public class StatementControllerTests {
 
         ((MockUserIdProvider)controller.getUserIdProvider()).setUserId(10);
 
-        OperationsUpdateDto request = new OperationsUpdateDto();
-        request.setBase64Content(testStatement);
+        StatementUpdateDto request = new StatementUpdateDto();
+        request.setBase64QifOperations(testStatement);
 
-        OperationsUpdateResponseDto result = controller.uploadOperations(request);
+        StatementUpdateResponseDto result = controller.updateStatement(request);
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
 
         ((MockUserIdProvider)controller.getUserIdProvider()).setUserId(11);
 
-        OperationsGetDto getResult = controller.getOperations();
+        StatementGetDto getResult = controller.getStatement();
 
         Assert.assertEquals(0, getResult.getOperations().size());
     }

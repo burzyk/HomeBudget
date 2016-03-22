@@ -4,7 +4,7 @@ import java.util.Base64
 
 import com.jpbnetsoftware.homebudget.data.OperationsRepository
 import com.jpbnetsoftware.homebudget.domain.StatementParser
-import com.jpbnetsoftware.homebudget.service.dto.{OperationsGetDto, OperationDetailsDto, OperationsUpdateDto, OperationsUpdateResponseDto}
+import com.jpbnetsoftware.homebudget.service.dto.{StatementGetDto, OperationDetailsDto, StatementUpdateDto, StatementUpdateResponseDto}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.{RequestBody, RequestMapping, RequestMethod, RestController}
 
@@ -28,9 +28,9 @@ class StatementController {
   @BeanProperty
   var userIdProvider: UserIdProvider = _
 
-  @RequestMapping(Array[String]("/statement/operations"))
-  def getOperations(): OperationsGetDto = {
-    val result = new OperationsGetDto
+  @RequestMapping(Array[String]("/statement"))
+  def getStatement(): StatementGetDto = {
+    val result = new StatementGetDto
     result.operations = operationsRepository.getOperations(userIdProvider.getCurrentUserId)
       .map(x => {
         val r = new OperationDetailsDto
@@ -44,16 +44,16 @@ class StatementController {
     result
   }
 
-  @RequestMapping(value = Array[String]("/statement/operations"), method = Array[RequestMethod](RequestMethod.POST))
-  def uploadOperations(@RequestBody entity: OperationsUpdateDto): OperationsUpdateResponseDto = {
+  @RequestMapping(value = Array[String]("/statement"), method = Array[RequestMethod](RequestMethod.POST))
+  def updateStatement(@RequestBody entity: StatementUpdateDto): StatementUpdateResponseDto = {
     val userId = userIdProvider.getCurrentUserId
-    val content = String.valueOf(Base64.getDecoder.decode(entity.base64Content).map(_.toChar))
+    val content = String.valueOf(Base64.getDecoder.decode(entity.base64QifOperations).map(_.toChar))
     val operations = statementParser.parse(content)
     val toInsert = operations.filterNot(x => operationsRepository.operationExists(userId, x))
 
     toInsert.foreach(x => operationsRepository.insertOperation(userId, x))
 
-    val result = new OperationsUpdateResponseDto
+    val result = new StatementUpdateResponseDto
     result.duplicatesCount = operations.size - toInsert.size
     result.insertedCount = toInsert.size
 
