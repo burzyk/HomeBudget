@@ -19,6 +19,15 @@ public class UsersRepositoryTests {
         Assert.assertEquals(true, repo.userExists("kasia", "tajnehaslo"));
     }
 
+    @Test
+    public void userExistsTest() {
+        UsersRepository repo = createUsersRepository();
+
+        Assert.assertEquals(false, repo.userExists("ala"));
+        repo.insertUser("ala", "tajnehaslo");
+        Assert.assertEquals(true, repo.userExists("ala"));
+    }
+
     private UsersRepository createUsersRepository() {
         HibernateRepository repo = new HibernateRepository();
 

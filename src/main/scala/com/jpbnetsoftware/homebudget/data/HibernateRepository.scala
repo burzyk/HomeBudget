@@ -1,6 +1,6 @@
 package com.jpbnetsoftware.homebudget.data
 
-import javax.persistence.Persistence
+import javax.persistence.{EntityManager, Persistence}
 
 import com.jpbnetsoftware.homebudget.data.entities.User
 import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, BankOperation}
@@ -23,41 +23,58 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
   override def getOperations(username: String): List[BankOperation] = ???
 
-  override def userExists(username: String): Boolean = ???
+  override def userExists(username: String): Boolean = {
+    dbOperation(x => {
+      val result = x.createQuery("from User where username = :username", classOf[User])
+        .setParameter("username", username)
+        .getResultList()
+
+      result.size() != 0
+    })
+  }
 
   override def userExists(username: String, password: String): Boolean = {
-    val entityManagerFactory = EntityManagerCache.entityManagerFactory
+    dbOperation(x => {
+      val result = x.createQuery("from User where username = :username and passwordHash = :passwordHash", classOf[User])
+        .setParameter("username", username)
+        .setParameter("passwordHash", cryptoHelper.hash(password))
+        .getResultList()
 
-    val entityManager = entityManagerFactory.createEntityManager()
-
-    entityManager.getTransaction().begin()
-    val result = entityManager.createQuery("from User where username = :username and passwordHash = :passwordHash", classOf[User])
-      .setParameter("username", username)
-      .setParameter("passwordHash", cryptoHelper.hash(password))
-      .getResultList()
-
-    entityManager.getTransaction().commit()
-    entityManager.close()
-
-    result.size() != 0
+      result.size() != 0
+    })
   }
 
   override def insertUser(username: String, password: String): Int = {
+    dbOperation(x => {
+      val user = new User()
+
+      user.username = username
+      user.passwordHash = cryptoHelper.hash(password)
+
+      x.persist(user)
+
+      user.id
+    })
+  }
+
+  def dbOperation[T](x: EntityManager => T): T = {
+    var result: T = null.asInstanceOf[T]
+
     val entityManagerFactory = EntityManagerCache.entityManagerFactory
+    val entityManager = entityManagerFactory.createEntityManager()
 
-    val entityManager = entityManagerFactory.createEntityManager();
-    entityManager.getTransaction().begin();
+    try {
+      entityManager.getTransaction().begin()
 
-    val user = new User()
-    user.username = username
-    user.passwordHash = cryptoHelper.hash(password);
+      result = x(entityManager)
 
-    entityManager.persist(user);
+      entityManager.getTransaction().commit()
+    }
+    finally {
+      entityManager.close()
+    }
 
-    entityManager.getTransaction().commit();
-    entityManager.close();
-
-    user.id
+    result
   }
 
   object EntityManagerCache {
