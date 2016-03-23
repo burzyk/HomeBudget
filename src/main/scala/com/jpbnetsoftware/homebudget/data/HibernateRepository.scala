@@ -17,6 +17,8 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
   @BeanProperty
   var cryptoHelper: CryptoHelper = _
 
+  def entityManagerFactory = EntityManagerProvider.entityManagerFactory
+
   override def operationExists(username: String, operation: BankOperation): Boolean = ???
 
   override def insertOperation(username: String, operation: BankOperation): Unit = ???
@@ -60,7 +62,6 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
   def dbOperation[T](x: EntityManager => T): T = {
     var result: T = null.asInstanceOf[T]
 
-    val entityManagerFactory = EntityManagerCache.entityManagerFactory
     val entityManager = entityManagerFactory.createEntityManager()
 
     try {
@@ -76,9 +77,5 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
     result
   }
-
-  object EntityManagerCache {
-    lazy val entityManagerFactory = Persistence.createEntityManagerFactory("com.jpbnetsoftware.homebudget.data")
-  }
-
 }
+

@@ -29,10 +29,6 @@ public class UsersRepositoryTests {
     }
 
     private UsersRepository createUsersRepository() {
-        HibernateRepository repo = new HibernateRepository();
-
-        repo.setCryptoHelper(new DefaultCryptoHelper());
-
-        return repo;
+        return TestHelpers.createHibernateRepository();
     }
 }

@@ -7,7 +7,6 @@ import com.jpbnetsoftware.homebudget.domain.BankOperation;
 import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
 import org.junit.Assert;
 import org.junit.Test;
-import scala.collection.immutable.List;
 import scala.collection.immutable.Map;
 
 /**
@@ -16,62 +15,58 @@ import scala.collection.immutable.Map;
 public class OperationsRepositoryTests {
     @Test
     public void insertOperationTest() {
-        String username = "ala";
-        createUsersRepository().insertUser(username, "makota");
-
         OperationsRepository repo = createOperationsRepository();
+
+        setupUser("ala", "makota", repo);
+
         BankOperation operation = new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54);
 
-        repo.insertOperation(username, operation);
-        Assert.assertEquals(true, repo.operationExists(username, operation));
+        repo.insertOperation("ala", operation);
+        Assert.assertEquals(true, repo.operationExists("ala", operation));
     }
 
     @Test
     public void operationExistsTest() {
-        String username = "ala1";
-        createUsersRepository().insertUser(username, "makota");
-
         OperationsRepository repo = createOperationsRepository();
+        setupUser("ala", "makota", repo);
+
         BankOperation operation = new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54);
 
-        repo.insertOperation(username, operation);
-        Assert.assertEquals(true, repo.operationExists(username, operation));
+        repo.insertOperation("ala", operation);
+        Assert.assertEquals(true, repo.operationExists("ala", operation));
     }
 
     @Test
     public void operationNotExistsTest() {
-        String username = "ala2";
-        createUsersRepository().insertUser(username, "makota");
-
         OperationsRepository repo = createOperationsRepository();
 
-        repo.insertOperation(username, new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
-        Assert.assertEquals(true, repo.operationExists(username, new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.55)));
+        setupUser("ala", "makota", repo);
+
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
+        Assert.assertEquals(true, repo.operationExists("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.55)));
     }
 
     @Test
     public void operationNotExistsWrongUserTest() {
-        String username = "ala3";
-        createUsersRepository().insertUser(username, "makota");
-
         OperationsRepository repo = createOperationsRepository();
 
-        repo.insertOperation(username, new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
-        Assert.assertEquals(true, repo.operationExists(username + "1", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54)));
+        setupUser("ala", "makota", repo);
+
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
+        Assert.assertEquals(true, repo.operationExists("ola", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54)));
     }
 
     @Test
     public void getOperationsTest() {
-        String username = "ala4";
-        createUsersRepository().insertUser(username, "makota");
-
         OperationsRepository repo = createOperationsRepository();
 
-        repo.insertOperation(username, new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
-        repo.insertOperation(username, new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
-        repo.insertOperation(username, new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
+        setupUser("ala", "makota", repo);
 
-        Map<Object, BankOperation> operations = repo.getOperations(username);
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
+
+        Map<Object, BankOperation> operations = repo.getOperations("ala");
 
         Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.apply(0).date());
         Assert.assertEquals("2", operations.apply(0).description());
@@ -88,23 +83,20 @@ public class OperationsRepositoryTests {
 
     @Test
     public void getOperationsMultitenantTest() {
-        String username1 = "ala5";
-        String username2 = "ola5";
-
-        createUsersRepository().insertUser(username1, "makota");
-        createUsersRepository().insertUser(username2, "maasa");
-
         OperationsRepository repo = createOperationsRepository();
 
-        repo.insertOperation(username1, new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
-        repo.insertOperation(username1, new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
-        repo.insertOperation(username1, new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
+        setupUser("ala", "makota", repo);
+        setupUser("ola", "maasa", repo);
 
-        repo.insertOperation(username2, new BankOperation(TestHelpers.getDate(2112, 06, 10), "x1", -13.54));
-        repo.insertOperation(username2, new BankOperation(TestHelpers.getDate(2107, 06, 10), "x2", -14.54));
-        repo.insertOperation(username2, new BankOperation(TestHelpers.getDate(2108, 06, 10), "x3", -15.54));
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
+        repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
 
-        Map<Object, BankOperation> operations = repo.getOperations(username1);
+        repo.insertOperation("ola", new BankOperation(TestHelpers.getDate(2112, 06, 10), "x1", -13.54));
+        repo.insertOperation("ola", new BankOperation(TestHelpers.getDate(2107, 06, 10), "x2", -14.54));
+        repo.insertOperation("ola", new BankOperation(TestHelpers.getDate(2108, 06, 10), "x3", -15.54));
+
+        Map<Object, BankOperation> operations = repo.getOperations("ala");
 
         Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.apply(0).date());
         Assert.assertEquals("2", operations.apply(0).description());
@@ -127,7 +119,7 @@ public class OperationsRepositoryTests {
         return repo;
     }
 
-    private UsersRepository createUsersRepository() {
-        return (UsersRepository) createOperationsRepository();
+    private void setupUser(String username, String password, OperationsRepository repo) {
+        ((UsersRepository) repo).insertUser(username, password);
     }
 }
