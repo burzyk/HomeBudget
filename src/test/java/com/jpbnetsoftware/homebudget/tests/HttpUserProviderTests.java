@@ -22,13 +22,32 @@ public class HttpUserProviderTests {
     }
 
     @Test
-    public void simpleAuthenticationTest() {
+    public void correctAuthenticationTest() {
+        authenticationTest("kasia", "mojetajnehaslo", true);
+    }
+
+    @Test
+    public void incorrectUsernameAuthenticationTest() {
+        authenticationTest("ala", "mojetajnehaslo", false);
+    }
+
+    @Test
+    public void incorrectPasswordAuthenticationTest() {
+        authenticationTest("kasia", "mojejawnehaslo", false);
+    }
+
+    @Test
+    public void incorrectDataAuthenticationTest() {
+        authenticationTest("ala", "mojejawnehaslo", false);
+    }
+
+    private void authenticationTest(String username, String password, boolean isValid) {
         AuthenticationManager manager = createAuthenticationManager();
 
-        int userId = ((HttpUserProvider) manager).getUsersRepository().insertUser("kasia", "mojetajnehaslo");
+        int userId = ((HttpUserProvider) manager).getUsersRepository().insertUser(username, password);
 
         Assert.assertEquals(1, userId);
-        Assert.assertEquals(true, manager.authenticate("Basic a2FzaWE6bW9qZXRham5laGFzbG8="));
+        Assert.assertEquals(isValid, manager.authenticate("Basic a2FzaWE6bW9qZXRham5laGFzbG8="));
     }
 
     private AuthenticationManager createAuthenticationManager() {
