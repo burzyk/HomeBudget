@@ -23,9 +23,9 @@ public class UsersRepositoryTests {
     public void userExistsTest() {
         UsersRepository repo = createUsersRepository();
 
-        Assert.assertEquals(false, repo.userExists("ala_userExistsTest"));
-        repo.insertUser("ala_userExistsTest", "tajnehaslo");
-        Assert.assertEquals(true, repo.userExists("ala_userExistsTest"));
+        Assert.assertEquals(false, repo.userExists("ala"));
+        repo.insertUser("ala", "tajnehaslo");
+        Assert.assertEquals(true, repo.userExists("ala"));
     }
 
     private UsersRepository createUsersRepository() {
