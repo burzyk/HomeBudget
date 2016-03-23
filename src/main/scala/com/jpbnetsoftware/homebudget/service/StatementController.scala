@@ -36,7 +36,8 @@ class StatementController {
   @RequestMapping(Array[String]("/statement"))
   def getStatement(): StatementGetDto = {
     new StatementGetDto(operationsRepository.getOperations(userProvider.getCurrentUsername)
-      .map(x => new OperationDetailsDto(x.id, x.date, x.description, x.amount))
+      .map(x => new OperationDetailsDto(x._1, x._2.date, x._2.description, x._2.amount))
+      .toList
       .asJava)
   }
 

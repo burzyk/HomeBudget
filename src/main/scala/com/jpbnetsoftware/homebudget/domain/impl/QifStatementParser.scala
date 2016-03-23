@@ -16,7 +16,6 @@ class QifStatementParser extends StatementParser {
 
     extractRecords(content)
       .map(x => new BankOperation(
-        0,
         parseDate(safeGetRecord(x, 'D')),
         safeGetRecord(x, 'P'),
         safeGetRecord(x, 'T').toDouble

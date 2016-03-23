@@ -31,8 +31,12 @@ class InMemoryDataRepository extends OperationsRepository with UsersRepository {
     operations(username) = operation :: operations(username)
   }
 
-  override def getOperations(username: String): List[BankOperation] = {
-    if (!operations.contains(username)) List[BankOperation]() else operations(username)
+  override def getOperations(username: String): Map[Int, BankOperation] = {
+    if (!operations.contains(username)) {
+      Map[Int, BankOperation]()
+    } else {
+      operations(username).map(x => (operations(username).indexOf(x), x)).toMap
+    }
   }
 
   override def insertUser(username: String, password: String): Int = {

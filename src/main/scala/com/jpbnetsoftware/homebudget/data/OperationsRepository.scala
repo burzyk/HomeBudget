@@ -10,5 +10,5 @@ trait OperationsRepository {
 
   def insertOperation(username: String, operation: BankOperation): Unit
 
-  def getOperations(username: String): List[BankOperation]
+  def getOperations(username: String): Map[Int, BankOperation]
 }

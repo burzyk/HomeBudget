@@ -21,7 +21,7 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
   override def insertOperation(username: String, operation: BankOperation): Unit = ???
 
-  override def getOperations(username: String): List[BankOperation] = ???
+  override def getOperations(username: String): Map[Int, BankOperation] = ???
 
   override def userExists(username: String): Boolean = {
     dbOperation(x => {
