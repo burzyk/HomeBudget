@@ -1,6 +1,6 @@
 package com.jpbnetsoftware.homebudget.tests;
 
-import com.jpbnetsoftware.homebudget.data.InMemoryDataRepository;
+import com.jpbnetsoftware.homebudget.data.HibernateRepository;
 import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
 import com.jpbnetsoftware.homebudget.domain.impl.QifStatementParser;
 import com.jpbnetsoftware.homebudget.service.StatementController;
@@ -128,7 +128,7 @@ public class StatementControllerTests {
     private StatementController createController() {
         StatementController controller = new StatementController();
 
-        controller.setOperationsRepository(new InMemoryDataRepository());
+        controller.setOperationsRepository(new HibernateRepository());
         controller.setStatementParser(new QifStatementParser());
         controller.setUserProvider(new MockUserProvider("ala"));
         controller.setCryptoHelper(new DefaultCryptoHelper());

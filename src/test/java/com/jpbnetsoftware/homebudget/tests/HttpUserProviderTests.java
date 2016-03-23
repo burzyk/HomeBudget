@@ -1,6 +1,6 @@
 package com.jpbnetsoftware.homebudget.tests;
 
-import com.jpbnetsoftware.homebudget.data.InMemoryDataRepository;
+import com.jpbnetsoftware.homebudget.data.HibernateRepository;
 import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
 import com.jpbnetsoftware.homebudget.service.AuthenticationManager;
 import com.jpbnetsoftware.homebudget.service.HttpUserProvider;
@@ -52,7 +52,7 @@ public class HttpUserProviderTests {
 
     private AuthenticationManager createAuthenticationManager() {
         HttpUserProvider manager = new HttpUserProvider();
-        InMemoryDataRepository repo = new InMemoryDataRepository();
+        HibernateRepository repo = new HibernateRepository();
         DefaultCryptoHelper crypto = new DefaultCryptoHelper();
 
         repo.setCryptoHelper(crypto);

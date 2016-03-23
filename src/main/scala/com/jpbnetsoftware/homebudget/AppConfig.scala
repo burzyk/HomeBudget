@@ -2,7 +2,7 @@ package com.jpbnetsoftware.homebudget
 
 import javax.servlet.Filter
 
-import com.jpbnetsoftware.homebudget.data.{InMemoryDataRepository, OperationsRepository, UsersRepository}
+import com.jpbnetsoftware.homebudget.data.{HibernateRepository, OperationsRepository, UsersRepository}
 import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, StatementParser}
 import com.jpbnetsoftware.homebudget.domain.impl.{DefaultCryptoHelper, QifStatementParser}
 import com.jpbnetsoftware.homebudget.service._
@@ -31,7 +31,7 @@ class AppConfig {
   def cryptoHelper(): CryptoHelper = new DefaultCryptoHelper()
 
   @Bean
-  def dataRepository(): InMemoryDataRepository = new InMemoryDataRepository()
+  def dataRepository(): HibernateRepository = new HibernateRepository()
 
   @Bean
   def statementParser(): StatementParser = new QifStatementParser()
