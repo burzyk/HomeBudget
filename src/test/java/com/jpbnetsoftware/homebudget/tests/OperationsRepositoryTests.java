@@ -2,9 +2,7 @@ package com.jpbnetsoftware.homebudget.tests;
 
 import com.jpbnetsoftware.homebudget.data.HibernateRepository;
 import com.jpbnetsoftware.homebudget.data.OperationsRepository;
-import com.jpbnetsoftware.homebudget.data.UsersRepository;
 import com.jpbnetsoftware.homebudget.domain.BankOperation;
-import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
 import org.junit.Assert;
 import org.junit.Test;
 import scala.collection.immutable.Map;
@@ -15,8 +13,7 @@ import scala.collection.immutable.Map;
 public class OperationsRepositoryTests {
     @Test
     public void insertOperationTest() {
-        OperationsRepository repo = createOperationsRepository();
-        setupUser("ala", "makota", repo);
+        OperationsRepository repo = setupOperationsRepository("ala");
 
         BankOperation operation = new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54);
 
@@ -26,8 +23,7 @@ public class OperationsRepositoryTests {
 
     @Test
     public void operationExistsTest() {
-        OperationsRepository repo = createOperationsRepository();
-        setupUser("ala", "makota", repo);
+        OperationsRepository repo = setupOperationsRepository("ala");
 
         BankOperation operation = new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54);
 
@@ -37,9 +33,7 @@ public class OperationsRepositoryTests {
 
     @Test
     public void operationNotExistsTest() {
-        OperationsRepository repo = createOperationsRepository();
-
-        setupUser("ala", "makota", repo);
+        OperationsRepository repo = setupOperationsRepository("ala");
 
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
         Assert.assertEquals(false, repo.operationExists("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.55)));
@@ -47,9 +41,7 @@ public class OperationsRepositoryTests {
 
     @Test
     public void operationNotExistsWrongUserTest() {
-        OperationsRepository repo = createOperationsRepository();
-
-        setupUser("ala", "makota", repo);
+        OperationsRepository repo = setupOperationsRepository("ala");
 
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
         Assert.assertEquals(false, repo.operationExists("ola", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54)));
@@ -57,9 +49,7 @@ public class OperationsRepositoryTests {
 
     @Test
     public void getOperationsTest() {
-        OperationsRepository repo = createOperationsRepository();
-
-        setupUser("ala", "makota", repo);
+        OperationsRepository repo = setupOperationsRepository("ala");
 
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
@@ -82,11 +72,8 @@ public class OperationsRepositoryTests {
 
     @Test
     public void getOperationsMultitenantTest() {
-        OperationsRepository repo = createOperationsRepository();
-
-        setupUser("ala", "makota", repo);
-        setupUser("ola", "maasa", repo);
-
+        OperationsRepository repo = setupOperationsRepository("ala", "ola");
+        
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
@@ -110,11 +97,13 @@ public class OperationsRepositoryTests {
         Assert.assertEquals(13.54, operations.toList().apply(2)._2().amount(), 0.001);
     }
 
-    private OperationsRepository createOperationsRepository() {
-        return TestHelpers.createHibernateRepository();
-    }
+    private OperationsRepository setupOperationsRepository(String... usernames) {
+        HibernateRepository repo = TestHelpers.createHibernateRepository();
 
-    private void setupUser(String username, String password, OperationsRepository repo) {
-        ((UsersRepository) repo).insertUser(username, password);
+        for (String u : usernames) {
+            repo.insertUser(u, u);
+        }
+
+        return repo;
     }
 }
