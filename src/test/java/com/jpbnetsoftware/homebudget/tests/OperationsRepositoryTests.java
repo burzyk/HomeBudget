@@ -16,7 +16,6 @@ public class OperationsRepositoryTests {
     @Test
     public void insertOperationTest() {
         OperationsRepository repo = createOperationsRepository();
-
         setupUser("ala", "makota", repo);
 
         BankOperation operation = new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54);
@@ -43,7 +42,7 @@ public class OperationsRepositoryTests {
         setupUser("ala", "makota", repo);
 
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
-        Assert.assertEquals(true, repo.operationExists("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.55)));
+        Assert.assertEquals(false, repo.operationExists("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.55)));
     }
 
     @Test
@@ -53,7 +52,7 @@ public class OperationsRepositoryTests {
         setupUser("ala", "makota", repo);
 
         repo.insertOperation("ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54));
-        Assert.assertEquals(true, repo.operationExists("ola", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54)));
+        Assert.assertEquals(false, repo.operationExists("ola", new BankOperation(TestHelpers.getDate(2012, 06, 10), "x", 13.54)));
     }
 
     @Test
@@ -68,17 +67,17 @@ public class OperationsRepositoryTests {
 
         Map<Object, BankOperation> operations = repo.getOperations("ala");
 
-        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.apply(0).date());
-        Assert.assertEquals("2", operations.apply(0).description());
-        Assert.assertEquals(14.54, operations.apply(0).amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.toList().apply(0)._2().date());
+        Assert.assertEquals("2", operations.toList().apply(0)._2().description());
+        Assert.assertEquals(14.54, operations.toList().apply(0)._2().amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.apply(1).date());
-        Assert.assertEquals("3", operations.apply(1).description());
-        Assert.assertEquals(15.54, operations.apply(1).amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.toList().apply(1)._2().date());
+        Assert.assertEquals("3", operations.toList().apply(1)._2().description());
+        Assert.assertEquals(15.54, operations.toList().apply(1)._2().amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.apply(2).date());
-        Assert.assertEquals("1", operations.apply(2).description());
-        Assert.assertEquals(13.54, operations.apply(2).amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.toList().apply(2)._2().date());
+        Assert.assertEquals("1", operations.toList().apply(2)._2().description());
+        Assert.assertEquals(13.54, operations.toList().apply(2)._2().amount(), 0.001);
     }
 
     @Test
@@ -98,25 +97,21 @@ public class OperationsRepositoryTests {
 
         Map<Object, BankOperation> operations = repo.getOperations("ala");
 
-        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.apply(0).date());
-        Assert.assertEquals("2", operations.apply(0).description());
-        Assert.assertEquals(14.54, operations.apply(0).amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.toList().apply(0)._2().date());
+        Assert.assertEquals("2", operations.toList().apply(0)._2().description());
+        Assert.assertEquals(14.54, operations.toList().apply(0)._2().amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.apply(1).date());
-        Assert.assertEquals("3", operations.apply(1).description());
-        Assert.assertEquals(15.54, operations.apply(1).amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.toList().apply(1)._2().date());
+        Assert.assertEquals("3", operations.toList().apply(1)._2().description());
+        Assert.assertEquals(15.54, operations.toList().apply(1)._2().amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.apply(2).date());
-        Assert.assertEquals("1", operations.apply(2).description());
-        Assert.assertEquals(13.54, operations.apply(2).amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.toList().apply(2)._2().date());
+        Assert.assertEquals("1", operations.toList().apply(2)._2().description());
+        Assert.assertEquals(13.54, operations.toList().apply(2)._2().amount(), 0.001);
     }
 
     private OperationsRepository createOperationsRepository() {
-        HibernateRepository repo = new HibernateRepository();
-
-        repo.setCryptoHelper(new DefaultCryptoHelper());
-
-        return repo;
+        return TestHelpers.createHibernateRepository();
     }
 
     private void setupUser(String username, String password, OperationsRepository repo) {

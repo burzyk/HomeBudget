@@ -10,6 +10,7 @@
 
         <class>com.jpbnetsoftware.homebudget.data.entities.BaseEntity</class>
         <class>com.jpbnetsoftware.homebudget.data.entities.User</class>
+        <class>com.jpbnetsoftware.homebudget.data.entities.EncryptedBankOperation</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver"/>

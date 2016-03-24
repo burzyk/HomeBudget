@@ -23,7 +23,7 @@ public class StatementControllerTests {
 
     @Test
     public void emptyGetTest() {
-        StatementController controller = this.createController();
+        StatementController controller = this.setupController("ala");
         StatementGetDto result = controller.getStatement();
 
         Assert.assertEquals(0, result.getOperations().size());
@@ -31,7 +31,7 @@ public class StatementControllerTests {
 
     @Test
     public void simpleUpdateTest() {
-        StatementController controller = this.createController();
+        StatementController controller = this.setupController("ala");
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
 
@@ -43,7 +43,7 @@ public class StatementControllerTests {
 
     @Test
     public void simpleUpdateAndGetTest() {
-        StatementController controller = this.createController();
+        StatementController controller = this.setupController("ala");
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
 
@@ -59,7 +59,7 @@ public class StatementControllerTests {
 
     @Test
     public void simpleUpdateAndGetOrderTest() {
-        StatementController controller = this.createController();
+        StatementController controller = this.setupController("ala");
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
 
@@ -88,7 +88,7 @@ public class StatementControllerTests {
 
     @Test
     public void duplicateUpdateTest() {
-        StatementController controller = this.createController();
+        StatementController controller = this.setupController("ala");
         StatementUpdateDto request = new StatementUpdateDto();
         request.setBase64QifOperations(testStatement);
 
@@ -107,7 +107,7 @@ public class StatementControllerTests {
 
     @Test
     public void multiUserUpdateTest() {
-        StatementController controller = this.createController();
+        StatementController controller = this.setupController("ala", "kot", "madzia");
 
         ((MockUserProvider) controller.getUserProvider()).setUsername("ala");
 
@@ -125,13 +125,20 @@ public class StatementControllerTests {
         Assert.assertEquals(0, getResult.getOperations().size());
     }
 
-    private StatementController createController() {
+    private StatementController setupController(String username, String... others) {
+        HibernateRepository repo = TestHelpers.createHibernateRepository();
         StatementController controller = new StatementController();
 
-        controller.setOperationsRepository(new HibernateRepository());
+        controller.setOperationsRepository(repo);
         controller.setStatementParser(new QifStatementParser());
-        controller.setUserProvider(new MockUserProvider("ala"));
+        controller.setUserProvider(new MockUserProvider(username));
         controller.setCryptoHelper(new DefaultCryptoHelper());
+
+        repo.insertUser(username, "mojetajnehaslo");
+
+        for (String s : others) {
+            repo.insertUser(s, "mojetajnehaslo" + s);
+        }
 
         return controller;
     }
