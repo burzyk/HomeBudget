@@ -11,9 +11,15 @@ import org.junit.Test;
 public class CryptoHelperTests {
 
     @Test
-    public void base64Test() {
+    public void base64DecodeTest() {
         CryptoHelper helper = createCryptoHelper();
         Assert.assertEquals("ala ma kota", helper.decodeBase64("YWxhIG1hIGtvdGE="));
+    }
+
+    @Test
+    public void base64EncodeTest() {
+        CryptoHelper helper = createCryptoHelper();
+        Assert.assertEquals("YWxhIG1hIGtvdGE=", helper.encodeBase64("ala ma kota"));
     }
 
     @Test

@@ -22,24 +22,6 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
   def entityManagerFactory = EntityManagerProvider.entityManagerFactory
 
-  override def operationExists(username: String, operation: BankOperation): Boolean = {
-    dbOperation(x => {
-      val result = x.createQuery(
-        "from EncryptedBankOperation where " +
-          "user.username = :username and " +
-          "date = :date and " +
-          "description = :description and " +
-          "amount = :amount", classOf[EncryptedBankOperation])
-        .setParameter("username", username)
-        .setParameter("date", Date.valueOf(operation.date))
-        .setParameter("description", operation.description)
-        .setParameter("amount", operation.amount.toString)
-        .getResultList()
-
-      result.size() != 0
-    })
-  }
-
   override def insertOperation(username: String, operation: BankOperation): Unit = {
     dbOperation(x => {
       val dbOperation = new EncryptedBankOperation()
@@ -53,12 +35,26 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
     })
   }
 
-  override def getOperations(username: String): Map[Int, BankOperation] = {
+  override def getOperations(username: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation] = {
+    def validateDate(date: LocalDate) = date.isAfter(LocalDate.of(1900, 1, 1)) && date.isBefore(LocalDate.of(3000, 1, 1))
+
+    if (!validateDate(from)) {
+      throw new IllegalArgumentException("from")
+    }
+
+    if (!validateDate(to)) {
+      throw new IllegalArgumentException("to")
+    }
+
     dbOperation(x => {
       val result = x.createQuery(
-        "from EncryptedBankOperation where user.username = :username order by date",
+        "from EncryptedBankOperation where " +
+          "user.username = :username and :from <= date and date <= :to " +
+          "order by date desc",
         classOf[EncryptedBankOperation])
         .setParameter("username", username)
+        .setParameter("from", Date.valueOf(from))
+        .setParameter("to", Date.valueOf(to))
         .getResultList()
 
       result.toArray

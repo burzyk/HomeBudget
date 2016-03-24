@@ -15,4 +15,8 @@ class DefaultCryptoHelper extends CryptoHelper {
     val digest = MessageDigest.getInstance("SHA-512")
     String.valueOf(Base64.getEncoder.encode(digest.digest(password.getBytes("UTF-8"))).map(_.toChar))
   }
+
+  override def encodeBase64(content: String): String = {
+    return Base64.getEncoder.encodeToString(content.getBytes("UTF-8"))
+  }
 }
