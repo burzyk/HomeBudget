@@ -20,7 +20,7 @@ class QifStatementParser extends StatementParser {
         safeGetRecord(x, 'P'),
         safeGetRecord(x, 'T').toDouble
       ))
-      .sortWith((o1, o2) => o1.date.isBefore(o2.date))
+      .sortWith((o1, o2) => o1.date.isAfter(o2.date))
   }
 
   private def safeGetRecord(records: Map[Char, String], recordId: Char): String = {
