@@ -22,9 +22,8 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
   def entityManagerFactory = EntityManagerProvider.entityManagerFactory
 
-  override def insertOperation(username: String, password: String, operation: BankOperation): Unit = {
+  override def insertOperations(username: String, password: String, operations: Seq[BankOperation]): Unit = {
     dbOperation(x => {
-      val dbOperation = new EncryptedBankOperation()
       val user = getUser(username)
 
       if (user == null) {
@@ -33,12 +32,16 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
       val encryptionKey = cryptoHelper.decrypt(user.encryptionKey, password)
 
-      dbOperation.date = Date.valueOf(operation.date)
-      dbOperation.description = cryptoHelper.encrypt(operation.description, encryptionKey)
-      dbOperation.amount = cryptoHelper.encrypt(operation.amount.toString, encryptionKey)
-      dbOperation.user = user
+      operations.foreach(operation => {
+        val dbOperation = new EncryptedBankOperation()
 
-      x.persist(dbOperation)
+        dbOperation.date = Date.valueOf(operation.date)
+        dbOperation.description = cryptoHelper.encrypt(operation.description, encryptionKey)
+        dbOperation.amount = cryptoHelper.encrypt(operation.amount.toString, encryptionKey)
+        dbOperation.user = user
+
+        x.persist(dbOperation)
+      })
     })
   }
 

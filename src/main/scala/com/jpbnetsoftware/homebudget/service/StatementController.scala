@@ -85,7 +85,7 @@ class StatementController {
     val toCompare = operationsRepository.getOperations(username, password, from, to).map(_._2).toList
 
     val toInsert = newOperations.filterNot(x => toCompare.contains(x))
-    toInsert.foreach(x => operationsRepository.insertOperation(username, password, x))
+    operationsRepository.insertOperations(username, password, toInsert)
 
     new StatementUpdateResponseDto(toInsert.size, newOperations.size - toInsert.size)
   }

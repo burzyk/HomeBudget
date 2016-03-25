@@ -6,7 +6,12 @@ import com.jpbnetsoftware.homebudget.domain.BankOperation;
 import com.jpbnetsoftware.homebudget.domain.InvalidKeyException;
 import org.junit.Assert;
 import org.junit.Test;
+import scala.collection.LinearSeq;
+import scala.collection.immutable.List;
 import scala.collection.immutable.Map;
+import scala.collection.immutable.Seq;
+import scala.collection.mutable.HashSet;
+import scala.collection.mutable.LinkedList;
 
 import java.time.LocalDate;
 
@@ -19,9 +24,12 @@ public class OperationsRepositoryTests {
     public void getOperationsTest() {
         OperationsRepository repo = setupOperationsRepository("ala");
 
-        repo.insertOperation("ala", "ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
-        repo.insertOperation("ala", "ala", new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
-        repo.insertOperation("ala", "ala", new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
+        HashSet<BankOperation> operationsSet = new HashSet<BankOperation>();
+        operationsSet.$plus$eq(new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
+        operationsSet.$plus$eq(new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
+        operationsSet.$plus$eq(new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
+
+        repo.insertOperations("ala", "ala", operationsSet.toSeq());
 
         Map<Object, BankOperation> operations = repo.getOperations("ala", "ala", LocalDate.of(2000, 01, 01), LocalDate.of(2500, 01, 01));
 
@@ -42,13 +50,18 @@ public class OperationsRepositoryTests {
     public void getOperationsMultitenantTest() {
         OperationsRepository repo = setupOperationsRepository("ala", "ola");
 
-        repo.insertOperation("ala", "ala", new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
-        repo.insertOperation("ala", "ala", new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
-        repo.insertOperation("ala", "ala", new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
+        HashSet<BankOperation> alaOperations = new HashSet<BankOperation>();
+        alaOperations.$plus$eq(new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
+        alaOperations.$plus$eq(new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
+        alaOperations.$plus$eq(new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
 
-        repo.insertOperation("ola", "ola", new BankOperation(TestHelpers.getDate(2112, 06, 10), "x1", -13.54));
-        repo.insertOperation("ola", "ola", new BankOperation(TestHelpers.getDate(2107, 06, 10), "x2", -14.54));
-        repo.insertOperation("ola", "ola", new BankOperation(TestHelpers.getDate(2108, 06, 10), "x3", -15.54));
+        HashSet<BankOperation> olaOperations = new HashSet<BankOperation>();
+        olaOperations.$plus$eq(new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
+        olaOperations.$plus$eq(new BankOperation(TestHelpers.getDate(2007, 06, 10), "2", 14.54));
+        olaOperations.$plus$eq(new BankOperation(TestHelpers.getDate(2008, 06, 10), "3", 15.54));
+
+        repo.insertOperations("ala", "ala", alaOperations.toSeq());
+        repo.insertOperations("ola", "ola", olaOperations.toSeq());
 
         Map<Object, BankOperation> operations = repo.getOperations("ala", "ala", LocalDate.of(2000, 01, 01), LocalDate.of(2500, 01, 01));
 
@@ -69,8 +82,10 @@ public class OperationsRepositoryTests {
     @Test(expected = InvalidKeyException.class)
     public void invalidPasswordTest() {
         OperationsRepository repo = setupOperationsRepository("ala");
+        HashSet<BankOperation> operations = new HashSet<BankOperation>();
+        operations.$plus$eq(new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
 
-        repo.insertOperation("ala", "valid-password", new BankOperation(TestHelpers.getDate(2012, 06, 10), "1", 13.54));
+        repo.insertOperations("ala", "valid-password", operations.toSeq());
         repo.getOperations("ala", "invalid-password", LocalDate.of(2000, 01, 01), LocalDate.of(2500, 01, 01));
     }
 
