@@ -30,6 +30,19 @@ public class CryptoHelperTests {
                 helper.hash("ala ma kota"));
     }
 
+    @Test
+    public void encryptionTest() {
+        CryptoHelper helper = createCryptoHelper();
+
+        String message = "ala ma kota";
+        String key = "kasia";
+
+        String cypher = helper.encrypt(message, key);
+        Assert.assertNotEquals(cypher, message);
+        String decrypted = helper.decrypt(cypher, key);
+        Assert.assertEquals(decrypted, message);
+    }
+
     private CryptoHelper createCryptoHelper() {
         return new DefaultCryptoHelper();
     }

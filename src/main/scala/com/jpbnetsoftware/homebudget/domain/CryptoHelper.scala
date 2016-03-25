@@ -9,4 +9,8 @@ trait CryptoHelper {
   def decodeBase64(content: String): String
 
   def encodeBase64(content: String): String
+
+  def encrypt(content: String, key: String): String
+
+  def decrypt(content: String, key: String): String
 }
