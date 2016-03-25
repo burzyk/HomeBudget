@@ -5,4 +5,6 @@ package com.jpbnetsoftware.homebudget.service
   */
 trait UserProvider {
   def getCurrentUsername: String
+
+  def getCurrentPassword: String
 }

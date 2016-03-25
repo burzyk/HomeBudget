@@ -21,7 +21,11 @@ class HttpUserProvider extends UserProvider with AuthenticationManager {
 
   var username: String = _
 
+  var password: String = _
+
   override def getCurrentUsername: String = username
+
+  override def getCurrentPassword: String = password
 
   override def authenticate(authHeader: String): Boolean = {
     if (username != null) {
@@ -34,11 +38,14 @@ class HttpUserProvider extends UserProvider with AuthenticationManager {
 
     return authHeader.split(" ").toList match {
       case t :: v :: Nil if t == "Basic" => cryptoHelper.decodeBase64(v).split(":").toList match {
-        case u :: p :: Nil if usersRepository.userExists(u, p) => username = u; true
+        case u :: p :: Nil if usersRepository.userExists(u, p) => {
+          username = u
+          password = p
+          true
+        }
         case _ => false
       }
       case _ => false
     }
   }
-
 }

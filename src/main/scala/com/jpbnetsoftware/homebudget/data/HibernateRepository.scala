@@ -22,20 +22,27 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
   def entityManagerFactory = EntityManagerProvider.entityManagerFactory
 
-  override def insertOperation(username: String, operation: BankOperation): Unit = {
+  override def insertOperation(username: String, password: String, operation: BankOperation): Unit = {
     dbOperation(x => {
       val dbOperation = new EncryptedBankOperation()
+      val user = getUser(username)
+
+      if (user == null) {
+        throw new IllegalArgumentException("Username not found")
+      }
+
+      val encryptionKey = cryptoHelper.decrypt(user.encryptionKey, password)
 
       dbOperation.date = Date.valueOf(operation.date)
-      dbOperation.description = operation.description
-      dbOperation.amount = operation.amount.toString
-      dbOperation.user = getUser(username)
+      dbOperation.description = cryptoHelper.encrypt(operation.description, encryptionKey)
+      dbOperation.amount = cryptoHelper.encrypt(operation.amount.toString, encryptionKey)
+      dbOperation.user = user
 
       x.persist(dbOperation)
     })
   }
 
-  override def getOperations(username: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation] = {
+  override def getOperations(username: String, password: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation] = {
     def validateDate(date: LocalDate) = date.isAfter(LocalDate.of(1900, 1, 1)) && date.isBefore(LocalDate.of(3000, 1, 1))
 
     if (!validateDate(from)) {
@@ -57,9 +64,20 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
         .setParameter("to", Date.valueOf(to))
         .getResultList()
 
+      val user = getUser(username)
+
+      if (user == null) {
+        throw new IllegalArgumentException("Username not found")
+      }
+
+      val encryptionKey = cryptoHelper.decrypt(user.encryptionKey, password)
+
       result.toArray
         .map(_.asInstanceOf[EncryptedBankOperation])
-        .map(x => (x.id -> new BankOperation(x.date.toLocalDate(), x.description, x.amount.toDouble)))
+        .map(x => (x.id -> new BankOperation(
+          x.date.toLocalDate(),
+          cryptoHelper.decrypt(x.description, encryptionKey),
+          cryptoHelper.decrypt(x.amount, encryptionKey).toDouble)))
         .toMap
     })
   }
@@ -79,6 +97,7 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
       user.username = username
       user.passwordHash = cryptoHelper.hash(password)
+      user.encryptionKey = cryptoHelper.encrypt(cryptoHelper.getRandomKey, password)
 
       x.persist(user)
 

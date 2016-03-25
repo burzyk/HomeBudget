@@ -55,8 +55,13 @@ class StatementController {
 
     val effectiveFrom = normalizeDate(from)
     val effectiveTo = normalizeDate(to)
+    val operations = operationsRepository.getOperations(
+      userProvider.getCurrentUsername,
+      userProvider.getCurrentPassword,
+      effectiveFrom,
+      effectiveTo)
 
-    new StatementGetDto(operationsRepository.getOperations(userProvider.getCurrentUsername, effectiveFrom, effectiveTo)
+    new StatementGetDto(operations
       .map(x => new OperationDetailsDto(x._1, x._2.date, x._2.description, x._2.amount))
       .toList
       .asJava)
@@ -65,6 +70,8 @@ class StatementController {
   @RequestMapping(value = Array[String]("/statement"), method = Array[RequestMethod](RequestMethod.POST))
   def updateStatement(@RequestBody entity: StatementUpdateDto): StatementUpdateResponseDto = {
     val username = userProvider.getCurrentUsername
+    val password = userProvider.getCurrentPassword
+
     val content = cryptoHelper.decodeBase64(entity.base64QifOperations)
     val newOperations = statementParser.parse(content).toList
 
@@ -75,10 +82,10 @@ class StatementController {
     // operations are sorted descending
     val from = newOperations.last.date
     val to = newOperations.apply(0).date
-    val toCompare = operationsRepository.getOperations(username, from, to).map(_._2).toList
+    val toCompare = operationsRepository.getOperations(username, password, from, to).map(_._2).toList
 
     val toInsert = newOperations.filterNot(x => toCompare.contains(x))
-    toInsert.foreach(x => operationsRepository.insertOperation(username, x))
+    toInsert.foreach(x => operationsRepository.insertOperation(username, password, x))
 
     new StatementUpdateResponseDto(toInsert.size, newOperations.size - toInsert.size)
   }

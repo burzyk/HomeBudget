@@ -16,4 +16,8 @@ class User extends BaseEntity {
   @BeanProperty
   @Column
   var passwordHash: String = _
+
+  @BeanProperty
+  @Column
+  var encryptionKey: String = _
 }

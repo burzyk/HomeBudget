@@ -8,7 +8,7 @@ import com.jpbnetsoftware.homebudget.domain.BankOperation
   * Created by pburzynski on 21/03/2016.
   */
 trait OperationsRepository {
-  def insertOperation(username: String, operation: BankOperation): Unit
+  def insertOperation(username: String, password: String, operation: BankOperation): Unit
 
-  def getOperations(username: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation]
+  def getOperations(username: String, password: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation]
 }

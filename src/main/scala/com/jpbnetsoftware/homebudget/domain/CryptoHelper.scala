@@ -13,4 +13,6 @@ trait CryptoHelper {
   def encrypt(content: String, key: String): String
 
   def decrypt(content: String, key: String): String
+
+  def getRandomKey(): String
 }

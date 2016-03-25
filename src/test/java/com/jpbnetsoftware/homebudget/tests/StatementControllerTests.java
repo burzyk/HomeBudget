@@ -170,6 +170,7 @@ public class StatementControllerTests {
         Assert.assertEquals(0, result.getDuplicatesCount());
 
         ((MockUserProvider) controller.getUserProvider()).setUsername("kot");
+        ((MockUserProvider) controller.getUserProvider()).setPassword("mojetajnehaslokot");
 
         StatementGetDto getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
 
@@ -193,18 +194,20 @@ public class StatementControllerTests {
     }
 
     private StatementController setupController(String username, String... others) {
+        String password = "mojetajnehaslo";
+
         HibernateRepository repo = TestHelpers.createHibernateRepository();
         StatementController controller = new StatementController();
 
         controller.setOperationsRepository(repo);
         controller.setStatementParser(new QifStatementParser());
-        controller.setUserProvider(new MockUserProvider(username));
+        controller.setUserProvider(new MockUserProvider(username, password));
         controller.setCryptoHelper(new DefaultCryptoHelper());
 
-        repo.insertUser(username, "mojetajnehaslo");
+        repo.insertUser(username, password);
 
         for (String s : others) {
-            repo.insertUser(s, "mojetajnehaslo" + s);
+            repo.insertUser(s, password + s);
         }
 
         return controller;
@@ -256,13 +259,21 @@ public class StatementControllerTests {
 
         private String username;
 
-        public MockUserProvider(String username) {
+        private String password;
+
+        public MockUserProvider(String username, String password) {
             this.username = username;
+            this.password = password;
         }
 
         @Override
         public String getCurrentUsername() {
             return this.getUsername();
+        }
+
+        @Override
+        public String getCurrentPassword() {
+            return this.getPassword();
         }
 
         public String getUsername() {
@@ -271,6 +282,14 @@ public class StatementControllerTests {
 
         public void setUsername(String username) {
             this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
         }
     }
 }

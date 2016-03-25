@@ -1,6 +1,7 @@
 package com.jpbnetsoftware.homebudget.tests;
 
 import com.jpbnetsoftware.homebudget.domain.CryptoHelper;
+import com.jpbnetsoftware.homebudget.domain.InvalidKeyException;
 import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,6 +42,18 @@ public class CryptoHelperTests {
         Assert.assertNotEquals(cypher, message);
         String decrypted = helper.decrypt(cypher, key);
         Assert.assertEquals(decrypted, message);
+    }
+
+    @Test(expected = InvalidKeyException.class)
+    public void badKeyTest() {
+        CryptoHelper helper = createCryptoHelper();
+
+        String message = "ala ma kota";
+        String key = "kasia";
+
+        String cypher = helper.encrypt(message, key);
+        Assert.assertNotEquals(cypher, message);
+        helper.decrypt(cypher, "invalid key");
     }
 
     private CryptoHelper createCryptoHelper() {

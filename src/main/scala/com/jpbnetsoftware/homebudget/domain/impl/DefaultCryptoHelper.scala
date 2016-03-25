@@ -1,12 +1,12 @@
 package com.jpbnetsoftware.homebudget.domain.impl
 
-import java.security.{SecureRandom, MessageDigest}
+import java.security.{GeneralSecurityException, SecureRandom, MessageDigest}
 import java.time.LocalDateTime
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 
-import com.jpbnetsoftware.homebudget.domain.CryptoHelper
+import com.jpbnetsoftware.homebudget.domain.{InvalidKeyException, CryptoHelper}
 
 /**
   * Created by pburzynski on 22/03/2016.
@@ -41,11 +41,17 @@ class DefaultCryptoHelper extends CryptoHelper {
     content.split(":").toList match {
       case iv :: c :: Nil => {
         cipher.init(Cipher.DECRYPT_MODE, getKeySpec(key), new IvParameterSpec(decodeBase64ToBytes(iv)))
-        new String(cipher.doFinal(decodeBase64ToBytes(c)), defaultEncoding)
+        try {
+          new String(cipher.doFinal(decodeBase64ToBytes(c)), defaultEncoding)
+        } catch {
+          case ex: GeneralSecurityException => throw new InvalidKeyException(ex)
+        }
       }
       case _ => throw new UnsupportedOperationException
     }
   }
+
+  override def getRandomKey(): String = encodeBase64ToString(getRandomBytes(16))
 
   def getCipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
 
@@ -68,6 +74,6 @@ class DefaultCryptoHelper extends CryptoHelper {
   }
 
   def encodeBase64ToString(content: Array[Byte]): String = {
-    Base64.getEncoder.encodeToString(content);
+    Base64.getEncoder.encodeToString(content)
   }
 }
