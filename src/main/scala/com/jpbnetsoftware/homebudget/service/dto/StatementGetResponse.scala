@@ -5,5 +5,5 @@ import scala.beans.BeanProperty
 /**
   * Created by pburzynski on 21/03/2016.
   */
-class StatementGetDto(@BeanProperty var operations: java.util.List[OperationDetailsDto]) {
+class StatementGetResponse(@BeanProperty var operations: java.util.List[OperationDetails]) {
 }

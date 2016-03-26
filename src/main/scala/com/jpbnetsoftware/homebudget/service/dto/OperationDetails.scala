@@ -7,7 +7,7 @@ import scala.beans.BeanProperty
 /**
   * Created by pburzynski on 21/03/2016.
   */
-class OperationDetailsDto(
+class OperationDetails(
                            @BeanProperty var id: Int,
                            @BeanProperty var date: LocalDate,
                            @BeanProperty var description: String,

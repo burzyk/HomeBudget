@@ -5,7 +5,7 @@ import java.util.{Date, Base64}
 
 import com.jpbnetsoftware.homebudget.data.OperationsRepository
 import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, StatementParser}
-import com.jpbnetsoftware.homebudget.service.dto.{StatementGetDto, OperationDetailsDto, StatementUpdateDto, StatementUpdateResponseDto}
+import com.jpbnetsoftware.homebudget.service.dto.{StatementGetResponse, OperationDetails, StatementUpdateRequest, StatementUpdateResponse}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
@@ -38,7 +38,7 @@ class StatementController {
   @RequestMapping(Array[String](UrlPaths.getStatementUrl))
   def getStatement(
                     @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") from: LocalDate,
-                    @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") to: LocalDate): StatementGetDto = {
+                    @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") to: LocalDate): StatementGetResponse = {
 
     def normalizeDate(date: LocalDate) =
       if (date.isAfter(LocalDate.of(2500, 1, 1))) {
@@ -49,34 +49,30 @@ class StatementController {
         date
       }
 
-    if (from == null || to == null) {
-      new StatementGetDto(List[OperationDetailsDto]().asJava)
-    }
-
-    val effectiveFrom = normalizeDate(from)
-    val effectiveTo = normalizeDate(to)
+    val effectiveFrom = normalizeDate(if (from == null) LocalDate.now().minusMonths(1) else from)
+    val effectiveTo = normalizeDate(if (to == null) LocalDate.now().plusDays(1) else to)
     val operations = operationsRepository.getOperations(
       userProvider.getCurrentUsername,
       userProvider.getCurrentPassword,
       effectiveFrom,
       effectiveTo)
 
-    new StatementGetDto(operations
-      .map(x => new OperationDetailsDto(x._1, x._2.date, x._2.description, x._2.amount))
+    new StatementGetResponse(operations
+      .map(x => new OperationDetails(x._1, x._2.date, x._2.description, x._2.amount))
       .toList
       .asJava)
   }
 
   @RequestMapping(value = Array[String](UrlPaths.updateStatementUrl), method = Array[RequestMethod](RequestMethod.POST))
-  def updateStatement(@RequestBody entity: StatementUpdateDto): StatementUpdateResponseDto = {
+  def updateStatement(@RequestBody request: StatementUpdateRequest): StatementUpdateResponse = {
     val username = userProvider.getCurrentUsername
     val password = userProvider.getCurrentPassword
 
-    val content = cryptoHelper.decodeBase64(entity.base64QifOperations)
+    val content = cryptoHelper.decodeBase64(request.base64QifOperations)
     val newOperations = statementParser.parse(content).toList
 
     if (newOperations.size == 0) {
-      new StatementUpdateResponseDto(0, 0)
+      new StatementUpdateResponse(0, 0)
     }
 
     // operations are sorted descending
@@ -87,6 +83,6 @@ class StatementController {
     val toInsert = newOperations.filterNot(x => toCompare.contains(x))
     operationsRepository.insertOperations(username, password, toInsert)
 
-    new StatementUpdateResponseDto(toInsert.size, newOperations.size - toInsert.size)
+    new StatementUpdateResponse(toInsert.size, newOperations.size - toInsert.size)
   }
 }

@@ -1,15 +1,14 @@
 package com.jpbnetsoftware.homebudget.tests;
 
 import com.jpbnetsoftware.homebudget.data.HibernateRepository;
-import com.jpbnetsoftware.homebudget.domain.BankOperation;
 import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
 import com.jpbnetsoftware.homebudget.domain.impl.QifStatementParser;
 import com.jpbnetsoftware.homebudget.service.StatementController;
 import com.jpbnetsoftware.homebudget.service.UserProvider;
-import com.jpbnetsoftware.homebudget.service.dto.OperationDetailsDto;
-import com.jpbnetsoftware.homebudget.service.dto.StatementGetDto;
-import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateDto;
-import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateResponseDto;
+import com.jpbnetsoftware.homebudget.service.dto.OperationDetails;
+import com.jpbnetsoftware.homebudget.service.dto.StatementGetResponse;
+import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateRequest;
+import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -43,7 +42,7 @@ public class StatementControllerTests {
     @Test
     public void emptyGetTest() {
         StatementController controller = this.setupController("ala");
-        StatementGetDto result = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
+        StatementGetResponse result = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
 
         Assert.assertEquals(0, result.getOperations().size());
     }
@@ -51,10 +50,10 @@ public class StatementControllerTests {
     @Test
     public void simpleUpdateTest() {
         StatementController controller = this.setupController("ala");
-        StatementUpdateDto request = new StatementUpdateDto();
+        StatementUpdateRequest request = new StatementUpdateRequest();
         request.setBase64QifOperations(prepareStatement(0, 1, 2, 3));
 
-        StatementUpdateResponseDto result = controller.updateStatement(request);
+        StatementUpdateResponse result = controller.updateStatement(request);
 
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
@@ -63,15 +62,15 @@ public class StatementControllerTests {
     @Test
     public void simpleUpdateAndGetTest() {
         StatementController controller = this.setupController("ala");
-        StatementUpdateDto request = new StatementUpdateDto();
+        StatementUpdateRequest request = new StatementUpdateRequest();
         request.setBase64QifOperations(prepareStatement(0, 1, 2, 3));
 
-        StatementUpdateResponseDto result = controller.updateStatement(request);
+        StatementUpdateResponse result = controller.updateStatement(request);
 
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
 
-        StatementGetDto getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
+        StatementGetResponse getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
 
         Assert.assertEquals(4, getResult.getOperations().size());
     }
@@ -79,12 +78,12 @@ public class StatementControllerTests {
     @Test
     public void simpleUpdateAndGetOrderTest() {
         StatementController controller = this.setupController("ala");
-        StatementUpdateDto request = new StatementUpdateDto();
+        StatementUpdateRequest request = new StatementUpdateRequest();
         request.setBase64QifOperations(prepareStatement(0, 1, 2, 3));
 
         controller.updateStatement(request);
-        StatementGetDto getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
-        List<OperationDetailsDto> operations = getResult.getOperations();
+        StatementGetResponse getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
+        List<OperationDetails> operations = getResult.getOperations();
 
         Assert.assertEquals(4, operations.size());
     }
@@ -92,10 +91,10 @@ public class StatementControllerTests {
     @Test
     public void duplicateUpdateTest() {
         StatementController controller = this.setupController("ala");
-        StatementUpdateDto request = new StatementUpdateDto();
+        StatementUpdateRequest request = new StatementUpdateRequest();
         request.setBase64QifOperations(prepareStatement(0, 1, 2, 3));
 
-        StatementUpdateResponseDto result = controller.updateStatement(request);
+        StatementUpdateResponse result = controller.updateStatement(request);
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
 
@@ -103,7 +102,7 @@ public class StatementControllerTests {
         Assert.assertEquals(0, result.getInsertedCount());
         Assert.assertEquals(4, result.getDuplicatesCount());
 
-        StatementGetDto getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
+        StatementGetResponse getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
 
         Assert.assertEquals(4, getResult.getOperations().size());
     }
@@ -162,30 +161,30 @@ public class StatementControllerTests {
 
         ((MockUserProvider) controller.getUserProvider()).setUsername("ala");
 
-        StatementUpdateDto request = new StatementUpdateDto();
+        StatementUpdateRequest request = new StatementUpdateRequest();
         request.setBase64QifOperations(prepareStatement(0, 1, 2, 3));
 
-        StatementUpdateResponseDto result = controller.updateStatement(request);
+        StatementUpdateResponse result = controller.updateStatement(request);
         Assert.assertEquals(4, result.getInsertedCount());
         Assert.assertEquals(0, result.getDuplicatesCount());
 
         ((MockUserProvider) controller.getUserProvider()).setUsername("kot");
         ((MockUserProvider) controller.getUserProvider()).setPassword("mojetajnehaslokot");
 
-        StatementGetDto getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
+        StatementGetResponse getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
 
         Assert.assertEquals(0, getResult.getOperations().size());
     }
 
     private void validateUpdate(StatementController controller, int[] newParts, int inserted, int duplicates, int[] newStatement) {
-        StatementUpdateDto request = new StatementUpdateDto();
+        StatementUpdateRequest request = new StatementUpdateRequest();
         request.setBase64QifOperations(prepareStatement(newParts));
-        StatementUpdateResponseDto result = controller.updateStatement(request);
+        StatementUpdateResponse result = controller.updateStatement(request);
 
         Assert.assertEquals(inserted, result.getInsertedCount());
         Assert.assertEquals(duplicates, result.getDuplicatesCount());
 
-        StatementGetDto statement = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
+        StatementGetResponse statement = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
         Assert.assertEquals(newStatement.length, statement.getOperations().size());
 
         for (int i = 0; i < newStatement.length; i++) {
@@ -223,7 +222,7 @@ public class StatementControllerTests {
         return new DefaultCryptoHelper().encodeBase64(statement);
     }
 
-    private void assertStatement(int i, OperationDetailsDto operation) {
+    private void assertStatement(int i, OperationDetails operation) {
 
         switch (i) {
             case 0: {
