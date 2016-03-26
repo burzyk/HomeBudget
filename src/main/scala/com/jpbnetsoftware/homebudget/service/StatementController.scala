@@ -35,7 +35,7 @@ class StatementController {
   @BeanProperty
   var cryptoHelper: CryptoHelper = _
 
-  @RequestMapping(Array[String]("/statement"))
+  @RequestMapping(Array[String](UrlPaths.getStatementUrl))
   def getStatement(
                     @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") from: LocalDate,
                     @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") to: LocalDate): StatementGetDto = {
@@ -67,7 +67,7 @@ class StatementController {
       .asJava)
   }
 
-  @RequestMapping(value = Array[String]("/statement"), method = Array[RequestMethod](RequestMethod.POST))
+  @RequestMapping(value = Array[String](UrlPaths.updateStatementUrl), method = Array[RequestMethod](RequestMethod.POST))
   def updateStatement(@RequestBody entity: StatementUpdateDto): StatementUpdateResponseDto = {
     val username = userProvider.getCurrentUsername
     val password = userProvider.getCurrentPassword

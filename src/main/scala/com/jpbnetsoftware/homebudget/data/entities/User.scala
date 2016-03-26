@@ -10,7 +10,7 @@ import scala.beans.BeanProperty
 @Entity
 class User extends BaseEntity {
   @BeanProperty
-  @Column
+  @Column(unique = true)
   var username: String = _
 
   @BeanProperty
@@ -18,6 +18,6 @@ class User extends BaseEntity {
   var passwordHash: String = _
 
   @BeanProperty
-  @Column
+  @Column(unique = true)
   var encryptionKey: String = _
 }
