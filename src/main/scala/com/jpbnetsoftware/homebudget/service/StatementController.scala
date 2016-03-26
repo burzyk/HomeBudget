@@ -35,6 +35,21 @@ class StatementController {
   @BeanProperty
   var cryptoHelper: CryptoHelper = _
 
+  @RequestMapping(Array[String](UrlPaths.getStatementSequenceUrl))
+  def getStatementSequence(@RequestParam index: Int, @RequestParam count: Int): StatementGetResponse = {
+
+    val operations = operationsRepository.getOperations(
+      userProvider.getCurrentUsername,
+      userProvider.getCurrentPassword,
+      index,
+      count)
+
+    new StatementGetResponse(operations
+      .map(x => new OperationDetails(x._1, x._2.date, x._2.description, x._2.amount))
+      .toList
+      .asJava)
+  }
+
   @RequestMapping(Array[String](UrlPaths.getStatementUrl))
   def getStatement(
                     @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") from: LocalDate,

@@ -46,6 +46,14 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
   }
 
   override def getOperations(username: String, password: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation] = {
+    getOperations(username, password, from, to, 0, Int.MaxValue)
+  }
+
+  override def getOperations(username: String, password: String, index: Int, count: Int): Map[Int, BankOperation] = {
+    getOperations(username, password, LocalDate.of(1901, 1, 1), LocalDate.of(2999, 1, 1), index, count)
+  }
+
+  override def getOperations(username: String, password: String, from: LocalDate, to: LocalDate, index: Int, count: Int): Map[Int, BankOperation] = {
     def validateDate(date: LocalDate) = date.isAfter(LocalDate.of(1900, 1, 1)) && date.isBefore(LocalDate.of(3000, 1, 1))
 
     if (!validateDate(from)) {
@@ -65,6 +73,8 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
         .setParameter("username", username)
         .setParameter("from", Date.valueOf(from))
         .setParameter("to", Date.valueOf(to))
+        .setFirstResult(index)
+        .setMaxResults(count)
         .getResultList()
 
       val user = getUser(username)

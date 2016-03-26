@@ -6,6 +6,8 @@ package com.jpbnetsoftware.homebudget.service
 object UrlPaths {
   final val getStatementUrl = "/api/statement"
 
+  final val getStatementSequenceUrl = "/api/statement/sequence"
+
   final val updateStatementUrl = "/api/statement"
 
   final val authenticateUrl = "/api/authenticate/"

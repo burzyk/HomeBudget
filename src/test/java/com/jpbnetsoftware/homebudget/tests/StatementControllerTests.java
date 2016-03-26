@@ -156,6 +156,39 @@ public class StatementControllerTests {
     }
 
     @Test
+    public void getStatementSequenceTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(controller, new int[]{2, 0, 1, 3}, 4, 0, new int[]{0, 1, 2, 3});
+        validateGetSequence(controller, 1, 2, 2, new int[]{1, 2});
+    }
+
+    @Test
+    public void getStatementSequenceOutOfBoundsCountTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(controller, new int[]{2, 0, 1, 3}, 4, 0, new int[]{0, 1, 2, 3});
+        validateGetSequence(controller, 3, 20, 1, new int[]{3});
+    }
+
+    @Test
+    public void getStatementSequenceOutOfBoundsIndexTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(controller, new int[]{2, 0, 1, 3}, 4, 0, new int[]{0, 1, 2, 3});
+        validateGetSequence(controller, 30, 21, 0, new int[]{});
+    }
+
+    @Test
+    public void getStatementSequenceStreamTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(controller, new int[]{2, 0, 1, 3}, 4, 0, new int[]{0, 1, 2, 3});
+        validateGetSequence(controller, 0, 2, 2, new int[]{0, 1});
+        validateGetSequence(controller, 2, 2, 2, new int[]{2, 3});
+    }
+
+    @Test
     public void multiUserUpdateTest() {
         StatementController controller = this.setupController("ala", "kot", "madzia");
 
@@ -174,6 +207,15 @@ public class StatementControllerTests {
         StatementGetResponse getResult = controller.getStatement(LocalDate.MIN, LocalDate.MAX);
 
         Assert.assertEquals(0, getResult.getOperations().size());
+    }
+
+    private void validateGetSequence(StatementController controller, int index, int count, int expectedCount, int[] parts) {
+        StatementGetResponse response = controller.getStatementSequence(index, count);
+        Assert.assertEquals(expectedCount, response.getOperations().size());
+
+        for (int i = 0; i < parts.length; i++) {
+            assertStatement(parts[i], response.getOperations().get(i));
+        }
     }
 
     private void validateUpdate(StatementController controller, int[] newParts, int inserted, int duplicates, int[] newStatement) {
