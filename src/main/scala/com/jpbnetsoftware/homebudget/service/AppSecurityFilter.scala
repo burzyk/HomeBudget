@@ -25,7 +25,7 @@ class AppSecurityFilter extends GenericFilterBean {
 
     val req = request.asInstanceOf[HttpServletRequest]
     val resp = response.asInstanceOf[HttpServletResponse]
-    val path = req.getContextPath
+    val path = req.getServletPath
 
     if (path == UrlPaths.authenticateUrl || path == UrlPaths.registerUrl) {
       // those two paths are allowed unauthenticated

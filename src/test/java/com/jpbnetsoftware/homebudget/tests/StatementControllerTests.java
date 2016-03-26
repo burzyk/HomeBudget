@@ -268,25 +268,25 @@ public class StatementControllerTests {
 
         switch (i) {
             case 0: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 20), operation.getDate());
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 20), operation.fullDate());
                 Assert.assertEquals("SUBWAY 26852 CD XXXX", operation.getDescription());
                 Assert.assertEquals(-5.0, operation.getAmount(), 0.001);
                 return;
             }
             case 1: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 17), operation.getDate());
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 17), operation.fullDate());
                 Assert.assertEquals("TESCO STORE 2808 CD XXXX", operation.getDescription());
                 Assert.assertEquals(-36.99, operation.getAmount(), 0.001);
                 return;
             }
             case 2: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 16), operation.getDate());
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 16), operation.fullDate());
                 Assert.assertEquals("O2 UK PAY & GO CD XXXX", operation.getDescription());
                 Assert.assertEquals(-15.0, operation.getAmount(), 0.001);
                 return;
             }
             case 3: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 15), operation.getDate());
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 15), operation.fullDate());
                 Assert.assertEquals("BP GLEDHOW S/STN CD XXXX", operation.getDescription());
                 Assert.assertEquals(-58.96, operation.getAmount(), 0.001);
                 return;

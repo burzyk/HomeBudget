@@ -52,8 +52,8 @@ class StatementController {
 
   @RequestMapping(Array[String](UrlPaths.getStatementUrl))
   def getStatement(
-                    @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") from: LocalDate,
-                    @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") to: LocalDate): StatementGetResponse = {
+                    @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") from: LocalDate,
+                    @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") to: LocalDate): StatementGetResponse = {
 
     def normalizeDate(date: LocalDate) =
       if (date.isAfter(LocalDate.of(2500, 1, 1))) {

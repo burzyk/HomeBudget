@@ -10,7 +10,7 @@ object UrlPaths {
 
   final val updateStatementUrl = "/api/statement"
 
-  final val authenticateUrl = "/api/authenticate/"
+  final val authenticateUrl = "/api/authenticate"
 
-  final val registerUrl = "/api/register/"
+  final val registerUrl = "/api/register"
 }
