@@ -14,13 +14,13 @@
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://192.168.1.120:3306/home_budget"/>
-            <property name="javax.persistence.jdbc.user" value="home_budget"/>
-            <property name="javax.persistence.jdbc.password" value="home_budget"/>
+            <property name="javax.persistence.jdbc.url" value="${com.jpbnetsoftware.homebudget.data.db.url}"/>
+            <property name="javax.persistence.jdbc.user" value="${com.jpbnetsoftware.homebudget.data.db.user}"/>
+            <property name="javax.persistence.jdbc.password" value="${com.jpbnetsoftware.homebudget.data.db.password}"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="${com.jpbnetsoftware.homebudget.data.db.schemageneration}"/>
         </properties>
     </persistence-unit>
 </persistence>
