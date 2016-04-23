@@ -13,4 +13,6 @@ object UrlPaths {
   final val authenticateUrl = "/api/authenticate"
 
   final val registerUrl = "/api/register"
+
+  final val getBalancesUrl = "/api/balances"
 }

@@ -5,7 +5,7 @@ import java.util.{Date, Base64}
 
 import com.jpbnetsoftware.homebudget.data.OperationsRepository
 import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, StatementParser}
-import com.jpbnetsoftware.homebudget.service.dto.{StatementGetResponse, OperationDetails, StatementUpdateRequest, StatementUpdateResponse}
+import com.jpbnetsoftware.homebudget.service.dto._
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
@@ -50,22 +50,21 @@ class StatementController {
       .asJava)
   }
 
+  @RequestMapping(Array[String](UrlPaths.getBalancesUrl))
+  def getBalances(
+                   @RequestParam fromMonth: Int,
+                   @RequestParam fromYear: Int,
+                   @RequestParam toMonth: Int,
+                   @RequestParam toYear: Int): StatementGetBalances = ???
+
+
   @RequestMapping(Array[String](UrlPaths.getStatementUrl))
   def getStatement(
                     @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") from: LocalDate,
                     @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") to: LocalDate): StatementGetResponse = {
 
-    def normalizeDate(date: LocalDate) =
-      if (date.isAfter(LocalDate.of(2500, 1, 1))) {
-        LocalDate.of(2500, 1, 1)
-      } else if (date.isBefore(LocalDate.of(1901, 1, 1))) {
-        LocalDate.of(1901, 1, 1)
-      } else {
-        date
-      }
-
-    val effectiveFrom = normalizeDate(if (from == null) LocalDate.now().minusMonths(1) else from)
-    val effectiveTo = normalizeDate(if (to == null) LocalDate.now().plusDays(1) else to)
+    val effectiveFrom = getEffectiveFrom(from)
+    val effectiveTo = getEffectiveTo(to)
     val operations = operationsRepository.getOperations(
       userProvider.getCurrentUsername,
       userProvider.getCurrentPassword,
@@ -100,4 +99,19 @@ class StatementController {
 
     new StatementUpdateResponse(toInsert.size, newOperations.size - toInsert.size)
   }
+
+  private def getEffectiveTo(to: LocalDate) =
+    normalizeDate(if (to == null) LocalDate.now().plusDays(1) else to)
+
+  private def getEffectiveFrom(from: LocalDate) =
+    normalizeDate(if (from == null) LocalDate.now().minusMonths(1) else from)
+
+  private def normalizeDate(date: LocalDate) =
+    if (date.isAfter(LocalDate.of(2500, 1, 1))) {
+      LocalDate.of(2500, 1, 1)
+    } else if (date.isBefore(LocalDate.of(1901, 1, 1))) {
+      LocalDate.of(1901, 1, 1)
+    } else {
+      date
+    }
 }

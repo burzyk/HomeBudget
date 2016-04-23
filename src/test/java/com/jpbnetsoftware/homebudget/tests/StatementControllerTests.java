@@ -5,10 +5,7 @@ import com.jpbnetsoftware.homebudget.domain.impl.DefaultCryptoHelper;
 import com.jpbnetsoftware.homebudget.domain.impl.QifStatementParser;
 import com.jpbnetsoftware.homebudget.service.StatementController;
 import com.jpbnetsoftware.homebudget.service.UserProvider;
-import com.jpbnetsoftware.homebudget.service.dto.OperationDetails;
-import com.jpbnetsoftware.homebudget.service.dto.StatementGetResponse;
-import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateRequest;
-import com.jpbnetsoftware.homebudget.service.dto.StatementUpdateResponse;
+import com.jpbnetsoftware.homebudget.service.dto.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,6 +33,42 @@ public class StatementControllerTests {
             "D15/08/2012\n" +
                     "PBP GLEDHOW S/STN CD XXXX \n" +
                     "T-58.96\n" +
+                    "^",
+            "D20/09/2012\n" +
+                    "MC DONNALDS S/STN CD XXXX \n" +
+                    "T-33.87\n" +
+                    "^",
+            "D20/03/2012\n" +
+                    "FR S/STN CD XXXX \n" +
+                    "T-76.17\n" +
+                    "^",
+            "D23/09/2013\n" +
+                    "BURGER KING S/STN CD XXXX \n" +
+                    "T-43.17\n" +
+                    "^",
+            "D23/09/2013\n" +
+                    "PAY 1 S/STN CD XXXX \n" +
+                    "T43.17\n" +
+                    "^",
+            "D15/03/2013\n" +
+                    "AZURE S/STN CD XXXX \n" +
+                    "T-43.17\n" +
+                    "^",
+            "D19/03/2013\n" +
+                    "PAY 3 S/STN CD XXXX \n" +
+                    "T1000.00\n" +
+                    "^",
+            "D15/08/2015\n" +
+                    "AWS S/STN CD XXXX \n" +
+                    "T-6.17\n" +
+                    "^",
+            "D20/08/2015\n" +
+                    "SREM S/STN CD XXXX \n" +
+                    "T6.17\n" +
+                    "^",
+            "D21/08/2015\n" +
+                    "SEXP S/STN CD XXXX \n" +
+                    "T-106.17\n" +
                     "^"
     };
 
@@ -209,6 +242,48 @@ public class StatementControllerTests {
         Assert.assertEquals(0, getResult.getOperations().size());
     }
 
+
+    // 20/08/2012  -5.00
+    // 17/08/2012  -36.99
+    // 16/08/2012  -15.00
+    // 15/08/2012  -58.96
+    // 20/09/2012  -33.87
+    // 20/03/2012  -76.17
+    // 23/09/2013  -43.17
+    // 23/09/2013  43.17
+    // 15/03/2013  -43.17
+    // 19/03/2013  1000.00
+    // 15/08/2015  -6.17
+    // 20/08/2015  6.17
+    // 21/08/2015  -106.17
+
+
+    @Test
+    public void getBalancesSimpleTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(controller, new int[]{0, 1, 2, 3});
+        validateBalances(controller, 8, 2012, 8, 2012, new BalanceDetails[]{
+                new BalanceDetails(2012, 8, -115.95, 0)
+        });
+    }
+
+
+    private void validateBalances(StatementController controller, int fromMonth, int fromYear, int toMonth, int toYear, BalanceDetails[] expectedBalances) {
+
+        List<BalanceDetails> balances = controller.getBalances(fromMonth, fromYear, toMonth, toYear).getBalances();
+
+        Assert.assertEquals(expectedBalances.length, balances.size());
+
+        for (int i = 0; i < expectedBalances.length; i++) {
+            Assert.assertEquals(expectedBalances[i].getTotalSpent(), balances.get(i).getTotalSpent(), 0.001);
+            Assert.assertEquals(expectedBalances[i].getTotalEarned(), balances.get(i).getTotalEarned(), 0.001);
+            Assert.assertEquals(expectedBalances[i].getMonth(), balances.get(i).getMonth());
+            Assert.assertEquals(expectedBalances[i].getYear(), balances.get(i).getYear());
+        }
+
+    }
+
     private void validateGetSequence(StatementController controller, int index, int count, int expectedCount, int[] parts) {
         StatementGetResponse response = controller.getStatementSequence(index, count);
         Assert.assertEquals(expectedCount, response.getOperations().size());
@@ -216,6 +291,10 @@ public class StatementControllerTests {
         for (int i = 0; i < parts.length; i++) {
             assertStatement(parts[i], response.getOperations().get(i));
         }
+    }
+
+    private void validateUpdate(StatementController controller, int[] newParts) {
+        validateUpdate(controller, newParts, newParts.length, 0, newParts);
     }
 
     private void validateUpdate(StatementController controller, int[] newParts, int inserted, int duplicates, int[] newStatement) {
