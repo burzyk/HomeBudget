@@ -242,21 +242,42 @@ public class StatementControllerTests {
         Assert.assertEquals(0, getResult.getOperations().size());
     }
 
+    @Test
+    public void getBalancesAllTest() {
+        StatementController controller = setupController("ala");
 
-    // 20/08/2012  -5.00
-    // 17/08/2012  -36.99
-    // 16/08/2012  -15.00
-    // 15/08/2012  -58.96
-    // 20/09/2012  -33.87
-    // 20/03/2012  -76.17
-    // 23/09/2013  -43.17
-    // 23/09/2013  43.17
-    // 15/03/2013  -43.17
-    // 19/03/2013  1000.00
-    // 15/08/2015  -6.17
-    // 20/08/2015  6.17
-    // 21/08/2015  -106.17
+        validateUpdate(controller, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+        validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
+                new BalanceDetails(2012, 3, -76.17, 0),
+                new BalanceDetails(2012, 8, -115.95, 0),
+                new BalanceDetails(2013, 3, 956.83, 0),
+                new BalanceDetails(2013, 9, 0, 0),
+                new BalanceDetails(2015, 8, -106.17, 0)
+        });
+    }
 
+    @Test
+    public void getBalancesTwoYearsTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(controller, new int[]{0, 1, 4, 5, 6, 7});
+        validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
+                new BalanceDetails(2012, 3, -76.17, 0),
+                new BalanceDetails(2012, 8, -41.99, 0),
+                new BalanceDetails(2013, 9, 0, 0)
+        });
+    }
+
+    @Test
+    public void getBalancesTwoMonthsTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(controller, new int[]{0, 1, 4});
+        validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
+                new BalanceDetails(2012, 8, -41.99, 0),
+                new BalanceDetails(2012, 9, -15.00, 0)
+        });
+    }
 
     @Test
     public void getBalancesSimpleTest() {
