@@ -150,6 +150,18 @@ public class StatementControllerTests {
     }
 
     @Test
+    public void fullUpdateTest() {
+        StatementController controller = setupController("ala");
+
+        validateUpdate(
+                controller,
+                new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12},
+                13,
+                0,
+                new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+    }
+
+    @Test
     public void partialDuplicateLeftUpdateTest() {
         StatementController controller = setupController("ala");
 
@@ -402,6 +414,48 @@ public class StatementControllerTests {
                 Assert.assertEquals(TestHelpers.getDate(2013, 3, 19), operation.fullDate());
                 Assert.assertEquals("PAY 3 S/STN CD XXXX", operation.getDescription());
                 Assert.assertEquals(1000.00, operation.getAmount(), 0.001);
+                return;
+            }
+            case 6: {
+                Assert.assertEquals(TestHelpers.getDate(2013, 3, 15), operation.fullDate());
+                Assert.assertEquals("AZURE S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(-43.17, operation.getAmount(), 0.001);
+                return;
+            }
+            case 7: {
+                Assert.assertEquals(TestHelpers.getDate(2012, 9, 20), operation.fullDate());
+                Assert.assertEquals("MC DONNALDS S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(-33.87, operation.getAmount(), 0.001);
+                return;
+            }
+            case 8: {
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 20), operation.fullDate());
+                Assert.assertEquals("SUBWAY 26852 CD XXXX", operation.getDescription());
+                Assert.assertEquals(-5.00, operation.getAmount(), 0.001);
+                return;
+            }
+            case 9: {
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 17), operation.fullDate());
+                Assert.assertEquals("TESCO STORE 2808 CD XXXX", operation.getDescription());
+                Assert.assertEquals(-36.99, operation.getAmount(), 0.001);
+                return;
+            }
+            case 10: {
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 16), operation.fullDate());
+                Assert.assertEquals("O2 UK PAY & GO CD XXXX", operation.getDescription());
+                Assert.assertEquals(-15.00, operation.getAmount(), 0.001);
+                return;
+            }
+            case 11: {
+                Assert.assertEquals(TestHelpers.getDate(2012, 8, 15), operation.fullDate());
+                Assert.assertEquals("BP GLEDHOW S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(-58.96, operation.getAmount(), 0.001);
+                return;
+            }
+            case 12: {
+                Assert.assertEquals(TestHelpers.getDate(2012, 3, 20), operation.fullDate());
+                Assert.assertEquals("FR S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(-76.17, operation.getAmount(), 0.001);
                 return;
             }
             default:

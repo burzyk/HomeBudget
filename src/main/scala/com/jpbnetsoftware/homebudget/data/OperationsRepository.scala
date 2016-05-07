@@ -2,6 +2,7 @@ package com.jpbnetsoftware.homebudget.data
 
 import java.time.LocalDate
 
+import com.jpbnetsoftware.homebudget.data.entities.DbBankOperation
 import com.jpbnetsoftware.homebudget.domain.BankOperation
 
 /**
@@ -10,9 +11,9 @@ import com.jpbnetsoftware.homebudget.domain.BankOperation
 trait OperationsRepository {
   def insertOperations(username: String, password: String, operations: Seq[BankOperation]): Unit
 
-  def getOperations(username: String, password: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation]
+  def getOperations(username: String, password: String, from: LocalDate, to: LocalDate): List[DbBankOperation]
 
-  def getOperations(username: String, password: String, index: Int, count: Int): Map[Int, BankOperation]
+  def getOperations(username: String, password: String, index: Int, count: Int): List[DbBankOperation]
 
-  def getOperations(username: String, password: String, from: LocalDate, to: LocalDate, index: Int, count: Int): Map[Int, BankOperation]
+  def getOperations(username: String, password: String, from: LocalDate, to: LocalDate, index: Int, count: Int): List[DbBankOperation]
 }

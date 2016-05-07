@@ -45,7 +45,7 @@ class StatementController {
       count)
 
     new StatementGetResponse(operations
-      .map(x => new OperationDetails(x._1, x._2.date, x._2.description, x._2.amount))
+      .map(x => new OperationDetails(x.id, x.date, x.description, x.amount))
       .toList
       .asJava)
   }
@@ -66,12 +66,12 @@ class StatementController {
       effectiveTo)
 
     new StatementGetBalances(operations
-      .groupBy(x => x._2.date.getYear * 100 + x._2.date.getMonthValue)
+      .groupBy(x => x.date.getYear * 100 + x.date.getMonthValue)
       .map(x => new BalanceDetails(
         x._1 / 100,
         x._1 % 100,
-        x._2.values.map(_.amount).filter(_ < 0).sum * -1,
-        x._2.values.map(_.amount).filter(_ > 0).sum))
+        x._2.map(_.amount).filter(_ < 0).sum * -1,
+        x._2.map(_.amount).filter(_ > 0).sum))
       .toList
       .asJava)
   }
@@ -91,7 +91,7 @@ class StatementController {
       effectiveTo)
 
     new StatementGetResponse(operations
-      .map(x => new OperationDetails(x._1, x._2.date, x._2.description, x._2.amount))
+      .map(x => new OperationDetails(x.id, x.date, x.description, x.amount))
       .toList
       .asJava)
   }
@@ -111,7 +111,7 @@ class StatementController {
     // operations are sorted descending
     val from = newOperations.last.date
     val to = newOperations.apply(0).date
-    val toCompare = operationsRepository.getOperations(username, password, from, to).map(_._2).toList
+    val toCompare = operationsRepository.getOperations(username, password, from, to).toList
 
     val toInsert = newOperations.filterNot(x => toCompare.contains(x))
     operationsRepository.insertOperations(username, password, toInsert)

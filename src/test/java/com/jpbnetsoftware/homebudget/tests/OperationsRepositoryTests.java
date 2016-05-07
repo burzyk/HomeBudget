@@ -2,6 +2,7 @@ package com.jpbnetsoftware.homebudget.tests;
 
 import com.jpbnetsoftware.homebudget.data.HibernateRepository;
 import com.jpbnetsoftware.homebudget.data.OperationsRepository;
+import com.jpbnetsoftware.homebudget.data.entities.DbBankOperation;
 import com.jpbnetsoftware.homebudget.domain.BankOperation;
 import com.jpbnetsoftware.homebudget.domain.InvalidKeyException;
 import org.junit.Assert;
@@ -31,19 +32,19 @@ public class OperationsRepositoryTests {
 
         repo.insertOperations("ala", "ala", operationsSet.toSeq());
 
-        Map<Object, BankOperation> operations = repo.getOperations("ala", "ala", LocalDate.of(2000, 01, 01), LocalDate.of(2500, 01, 01));
+        List<DbBankOperation> operations = repo.getOperations("ala", "ala", LocalDate.of(2000, 01, 01), LocalDate.of(2500, 01, 01));
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.toList().apply(0)._2().date());
-        Assert.assertEquals("1", operations.toList().apply(0)._2().description());
-        Assert.assertEquals(13.54, operations.toList().apply(0)._2().amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.toList().apply(0).date());
+        Assert.assertEquals("1", operations.toList().apply(0).description());
+        Assert.assertEquals(13.54, operations.toList().apply(0).amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.toList().apply(1)._2().date());
-        Assert.assertEquals("3", operations.toList().apply(1)._2().description());
-        Assert.assertEquals(15.54, operations.toList().apply(1)._2().amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.toList().apply(1).date());
+        Assert.assertEquals("3", operations.toList().apply(1).description());
+        Assert.assertEquals(15.54, operations.toList().apply(1).amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.toList().apply(2)._2().date());
-        Assert.assertEquals("2", operations.toList().apply(2)._2().description());
-        Assert.assertEquals(14.54, operations.toList().apply(2)._2().amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.toList().apply(2).date());
+        Assert.assertEquals("2", operations.toList().apply(2).description());
+        Assert.assertEquals(14.54, operations.toList().apply(2).amount(), 0.001);
     }
 
     @Test
@@ -63,20 +64,20 @@ public class OperationsRepositoryTests {
         repo.insertOperations("ala", "ala", alaOperations.toSeq());
         repo.insertOperations("ola", "ola", olaOperations.toSeq());
 
-        Map<Object, BankOperation> operations = repo.getOperations("ala", "ala", LocalDate.of(2000, 01, 01), LocalDate.of(2500, 01, 01));
+        List<DbBankOperation> operations = repo.getOperations("ala", "ala", LocalDate.of(2000, 01, 01), LocalDate.of(2500, 01, 01));
 
-        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.toList().apply(0)._2().date());
-        Assert.assertEquals("1", operations.toList().apply(0)._2().description());
-        Assert.assertEquals(13.54, operations.toList().apply(0)._2().amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2012, 06, 10), operations.toList().apply(0).date());
+        Assert.assertEquals("1", operations.toList().apply(0).description());
+        Assert.assertEquals(13.54, operations.toList().apply(0).amount(), 0.001);
 
-        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.toList().apply(1)._2().date());
-        Assert.assertEquals("3", operations.toList().apply(1)._2().description());
-        Assert.assertEquals(15.54, operations.toList().apply(1)._2().amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2008, 06, 10), operations.toList().apply(1).date());
+        Assert.assertEquals("3", operations.toList().apply(1).description());
+        Assert.assertEquals(15.54, operations.toList().apply(1).amount(), 0.001);
 
 
-        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.toList().apply(2)._2().date());
-        Assert.assertEquals("2", operations.toList().apply(2)._2().description());
-        Assert.assertEquals(14.54, operations.toList().apply(2)._2().amount(), 0.001);
+        Assert.assertEquals(TestHelpers.getDate(2007, 06, 10), operations.toList().apply(2).date());
+        Assert.assertEquals("2", operations.toList().apply(2).description());
+        Assert.assertEquals(14.54, operations.toList().apply(2).amount(), 0.001);
     }
 
     @Test(expected = InvalidKeyException.class)

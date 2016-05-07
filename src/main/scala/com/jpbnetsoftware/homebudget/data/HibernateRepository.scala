@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.persistence.{EntityManager, Persistence}
 
-import com.jpbnetsoftware.homebudget.data.entities.{EncryptedBankOperation, User}
+import com.jpbnetsoftware.homebudget.data.entities.{DbBankOperation, EncryptedBankOperation, User}
 import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, BankOperation}
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -45,15 +45,15 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
     })
   }
 
-  override def getOperations(username: String, password: String, from: LocalDate, to: LocalDate): Map[Int, BankOperation] = {
+  override def getOperations(username: String, password: String, from: LocalDate, to: LocalDate): List[DbBankOperation] = {
     getOperations(username, password, from, to, 0, Int.MaxValue)
   }
 
-  override def getOperations(username: String, password: String, index: Int, count: Int): Map[Int, BankOperation] = {
+  override def getOperations(username: String, password: String, index: Int, count: Int): List[DbBankOperation] = {
     getOperations(username, password, LocalDate.of(1901, 1, 1), LocalDate.of(2999, 1, 1), index, count)
   }
 
-  override def getOperations(username: String, password: String, from: LocalDate, to: LocalDate, index: Int, count: Int): Map[Int, BankOperation] = {
+  override def getOperations(username: String, password: String, from: LocalDate, to: LocalDate, index: Int, count: Int): List[DbBankOperation] = {
     def validateDate(date: LocalDate) = date.isAfter(LocalDate.of(1900, 1, 1)) && date.isBefore(LocalDate.of(3000, 1, 1))
 
     if (!validateDate(from)) {
@@ -87,11 +87,12 @@ class HibernateRepository extends OperationsRepository with UsersRepository {
 
       result.toArray
         .map(_.asInstanceOf[EncryptedBankOperation])
-        .map(x => (x.id -> new BankOperation(
+        .map(x => new DbBankOperation(
+          x.id,
           x.date.toLocalDate(),
           cryptoHelper.decrypt(x.description, encryptionKey),
-          cryptoHelper.decrypt(x.amount, encryptionKey).toDouble)))
-        .toMap
+          cryptoHelper.decrypt(x.amount, encryptionKey).toDouble))
+        .toList
     })
   }
 
