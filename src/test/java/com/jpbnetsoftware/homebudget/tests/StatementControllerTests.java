@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +19,38 @@ import java.util.List;
 public class StatementControllerTests {
 
     private final String[] statementParts = new String[]{
+            "D21/08/2015\n" +
+                    "PSEXP S/STN CD XXXX \n" +
+                    "T-106.17\n" +
+                    "^",
+            "D20/08/2015\n" +
+                    "PSREM S/STN CD XXXX \n" +
+                    "T6.17\n" +
+                    "^",
+            "D15/08/2015\n" +
+                    "PAWS S/STN CD XXXX \n" +
+                    "T-6.17\n" +
+                    "^",
+            "D23/09/2013\n" +
+                    "PBURGER KING S/STN CD XXXX \n" +
+                    "T-43.17\n" +
+                    "^",
+            "D23/09/2013\n" +
+                    "PPAY 1 S/STN CD XXXX \n" +
+                    "T43.17\n" +
+                    "^",
+            "D19/03/2013\n" +
+                    "PPAY 3 S/STN CD XXXX \n" +
+                    "T1000.00\n" +
+                    "^",
+            "D15/03/2013\n" +
+                    "PAZURE S/STN CD XXXX \n" +
+                    "T-43.17\n" +
+                    "^",
+            "D20/09/2012\n" +
+                    "PMC DONNALDS S/STN CD XXXX \n" +
+                    "T-33.87\n" +
+                    "^",
             "D20/08/2012\n" +
                     "PSUBWAY 26852 CD XXXX \n" +
                     "T-5.00\n" +
@@ -34,41 +67,9 @@ public class StatementControllerTests {
                     "PBP GLEDHOW S/STN CD XXXX \n" +
                     "T-58.96\n" +
                     "^",
-            "D20/09/2012\n" +
-                    "MC DONNALDS S/STN CD XXXX \n" +
-                    "T-33.87\n" +
-                    "^",
             "D20/03/2012\n" +
-                    "FR S/STN CD XXXX \n" +
+                    "PFR S/STN CD XXXX \n" +
                     "T-76.17\n" +
-                    "^",
-            "D23/09/2013\n" +
-                    "BURGER KING S/STN CD XXXX \n" +
-                    "T-43.17\n" +
-                    "^",
-            "D23/09/2013\n" +
-                    "PAY 1 S/STN CD XXXX \n" +
-                    "T43.17\n" +
-                    "^",
-            "D15/03/2013\n" +
-                    "AZURE S/STN CD XXXX \n" +
-                    "T-43.17\n" +
-                    "^",
-            "D19/03/2013\n" +
-                    "PAY 3 S/STN CD XXXX \n" +
-                    "T1000.00\n" +
-                    "^",
-            "D15/08/2015\n" +
-                    "AWS S/STN CD XXXX \n" +
-                    "T-6.17\n" +
-                    "^",
-            "D20/08/2015\n" +
-                    "SREM S/STN CD XXXX \n" +
-                    "T6.17\n" +
-                    "^",
-            "D21/08/2015\n" +
-                    "SEXP S/STN CD XXXX \n" +
-                    "T-106.17\n" +
                     "^"
     };
 
@@ -248,11 +249,11 @@ public class StatementControllerTests {
 
         validateUpdate(controller, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
         validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
-                new BalanceDetails(2012, 3, -76.17, 0),
-                new BalanceDetails(2012, 8, -115.95, 0),
-                new BalanceDetails(2013, 3, 956.83, 0),
-                new BalanceDetails(2013, 9, 0, 0),
-                new BalanceDetails(2015, 8, -106.17, 0)
+                new BalanceDetails(2015, 8, 112.34, 6.17),
+                new BalanceDetails(2013, 9, 43.17, 43.17),
+                new BalanceDetails(2013, 3, 43.17, 1000),
+                new BalanceDetails(2012, 8, 115.95, 0),
+                new BalanceDetails(2012, 3, 76.17, 0),
         });
     }
 
@@ -262,9 +263,9 @@ public class StatementControllerTests {
 
         validateUpdate(controller, new int[]{0, 1, 4, 5, 6, 7});
         validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
-                new BalanceDetails(2012, 3, -76.17, 0),
-                new BalanceDetails(2012, 8, -41.99, 0),
-                new BalanceDetails(2013, 9, 0, 0)
+                new BalanceDetails(2013, 9, 43.17, 43.17),
+                new BalanceDetails(2012, 8, 41.99, 0),
+                new BalanceDetails(2012, 3, 76.17, 0),
         });
     }
 
@@ -274,8 +275,8 @@ public class StatementControllerTests {
 
         validateUpdate(controller, new int[]{0, 1, 4});
         validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
-                new BalanceDetails(2012, 8, -41.99, 0),
-                new BalanceDetails(2012, 9, -15.00, 0)
+                new BalanceDetails(2012, 9, 33.87, 0),
+                new BalanceDetails(2012, 8, 41.99, 0)
         });
     }
 
@@ -285,7 +286,7 @@ public class StatementControllerTests {
 
         validateUpdate(controller, new int[]{0, 1, 2, 3});
         validateBalances(controller, 8, 2012, 8, 2012, new BalanceDetails[]{
-                new BalanceDetails(2012, 8, -115.95, 0)
+                new BalanceDetails(2012, 8, 115.95, 0)
         });
     }
 
@@ -368,27 +369,39 @@ public class StatementControllerTests {
 
         switch (i) {
             case 0: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 20), operation.fullDate());
-                Assert.assertEquals("SUBWAY 26852 CD XXXX", operation.getDescription());
-                Assert.assertEquals(-5.0, operation.getAmount(), 0.001);
+                Assert.assertEquals(TestHelpers.getDate(2015, 8, 21), operation.fullDate());
+                Assert.assertEquals("SEXP S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(-106.17, operation.getAmount(), 0.001);
                 return;
             }
             case 1: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 17), operation.fullDate());
-                Assert.assertEquals("TESCO STORE 2808 CD XXXX", operation.getDescription());
-                Assert.assertEquals(-36.99, operation.getAmount(), 0.001);
+                Assert.assertEquals(TestHelpers.getDate(2015, 8, 20), operation.fullDate());
+                Assert.assertEquals("SREM S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(6.17, operation.getAmount(), 0.001);
                 return;
             }
             case 2: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 16), operation.fullDate());
-                Assert.assertEquals("O2 UK PAY & GO CD XXXX", operation.getDescription());
-                Assert.assertEquals(-15.0, operation.getAmount(), 0.001);
+                Assert.assertEquals(TestHelpers.getDate(2015, 8, 15), operation.fullDate());
+                Assert.assertEquals("AWS S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(-6.17, operation.getAmount(), 0.001);
                 return;
             }
             case 3: {
-                Assert.assertEquals(TestHelpers.getDate(2012, 8, 15), operation.fullDate());
-                Assert.assertEquals("BP GLEDHOW S/STN CD XXXX", operation.getDescription());
-                Assert.assertEquals(-58.96, operation.getAmount(), 0.001);
+                Assert.assertEquals(TestHelpers.getDate(2013, 9, 23), operation.fullDate());
+                Assert.assertEquals("BURGER KING S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(-43.17, operation.getAmount(), 0.001);
+                return;
+            }
+            case 4: {
+                Assert.assertEquals(TestHelpers.getDate(2013, 9, 23), operation.fullDate());
+                Assert.assertEquals("PAY 1 S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(43.17, operation.getAmount(), 0.001);
+                return;
+            }
+            case 5: {
+                Assert.assertEquals(TestHelpers.getDate(2013, 3, 19), operation.fullDate());
+                Assert.assertEquals("PAY 3 S/STN CD XXXX", operation.getDescription());
+                Assert.assertEquals(1000.00, operation.getAmount(), 0.001);
                 return;
             }
             default:

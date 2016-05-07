@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.util.{Date, Base64}
 
 import com.jpbnetsoftware.homebudget.data.OperationsRepository
-import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, StatementParser}
+import com.jpbnetsoftware.homebudget.domain.{BankOperation, CryptoHelper, StatementParser}
 import com.jpbnetsoftware.homebudget.service.dto._
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -55,7 +55,26 @@ class StatementController {
                    @RequestParam fromMonth: Int,
                    @RequestParam fromYear: Int,
                    @RequestParam toMonth: Int,
-                   @RequestParam toYear: Int): StatementGetBalances = ???
+                   @RequestParam toYear: Int): StatementGetBalances = {
+
+    val effectiveFrom = getEffectiveFrom(LocalDate.of(fromYear, fromMonth, 1))
+    val effectiveTo = getEffectiveTo(LocalDate.of(toYear, toMonth, 1).plusMonths(1))
+    val operations = operationsRepository.getOperations(
+      userProvider.getCurrentUsername,
+      userProvider.getCurrentPassword,
+      effectiveFrom,
+      effectiveTo)
+
+    new StatementGetBalances(operations
+      .groupBy(x => x._2.date.getYear * 100 + x._2.date.getMonthValue)
+      .map(x => new BalanceDetails(
+        x._1 / 100,
+        x._1 % 100,
+        x._2.values.map(_.amount).filter(_ < 0).sum * -1,
+        x._2.values.map(_.amount).filter(_ > 0).sum))
+      .toList
+      .asJava)
+  }
 
 
   @RequestMapping(Array[String](UrlPaths.getStatementUrl))

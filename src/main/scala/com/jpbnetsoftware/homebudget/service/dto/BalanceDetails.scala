@@ -7,8 +7,8 @@ import scala.beans.BeanProperty
 ;
 
 /**
- * Created by pburzynski on 23/04/2016.
- */
+  * Created by pburzynski on 23/04/2016.
+  */
 class BalanceDetails(
                       @BeanProperty
                       var year: Int,
@@ -21,4 +21,6 @@ class BalanceDetails(
 
                       @BeanProperty
                       var totalSpent: Double) {
+  @BeanProperty
+  val balance = totalEarned - totalSpent
 }
