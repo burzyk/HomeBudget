@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -259,11 +258,12 @@ public class StatementControllerTests {
     public void getBalancesAllTest() {
         StatementController controller = setupController("ala");
 
-        validateUpdate(controller, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
-        validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
+        setupBalancesTest(controller);
+        validateBalances(controller, 8, 2010, 9, 2016, new BalanceDetails[]{
                 new BalanceDetails(2015, 8, 112.34, 6.17),
                 new BalanceDetails(2013, 9, 43.17, 43.17),
                 new BalanceDetails(2013, 3, 43.17, 1000),
+                new BalanceDetails(2012, 9, 33.87, 0),
                 new BalanceDetails(2012, 8, 115.95, 0),
                 new BalanceDetails(2012, 3, 76.17, 0),
         });
@@ -273,10 +273,12 @@ public class StatementControllerTests {
     public void getBalancesTwoYearsTest() {
         StatementController controller = setupController("ala");
 
-        validateUpdate(controller, new int[]{0, 1, 4, 5, 6, 7});
-        validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
+        setupBalancesTest(controller);
+        validateBalances(controller, 3, 2012, 9, 2013, new BalanceDetails[]{
                 new BalanceDetails(2013, 9, 43.17, 43.17),
-                new BalanceDetails(2012, 8, 41.99, 0),
+                new BalanceDetails(2013, 3, 43.17, 1000),
+                new BalanceDetails(2012, 9, 33.87, 0),
+                new BalanceDetails(2012, 8, 115.95, 0),
                 new BalanceDetails(2012, 3, 76.17, 0),
         });
     }
@@ -285,10 +287,20 @@ public class StatementControllerTests {
     public void getBalancesTwoMonthsTest() {
         StatementController controller = setupController("ala");
 
-        validateUpdate(controller, new int[]{0, 1, 4});
+        setupBalancesTest(controller);
         validateBalances(controller, 8, 2012, 9, 2012, new BalanceDetails[]{
                 new BalanceDetails(2012, 9, 33.87, 0),
-                new BalanceDetails(2012, 8, 41.99, 0)
+                new BalanceDetails(2012, 8, 115.95, 0)
+        });
+    }
+
+    @Test
+    public void getBalancesTwoDaysTest() {
+        StatementController controller = setupController("ala");
+
+        setupBalancesTest(controller);
+        validateBalances(controller, 9, 2013, 9, 2013, new BalanceDetails[]{
+                new BalanceDetails(2013, 9, 43.17, 43.17)
         });
     }
 
@@ -296,7 +308,7 @@ public class StatementControllerTests {
     public void getBalancesSimpleTest() {
         StatementController controller = setupController("ala");
 
-        validateUpdate(controller, new int[]{0, 1, 2, 3});
+        setupBalancesTest(controller);
         validateBalances(controller, 8, 2012, 8, 2012, new BalanceDetails[]{
                 new BalanceDetails(2012, 8, 115.95, 0)
         });
@@ -327,7 +339,8 @@ public class StatementControllerTests {
         }
     }
 
-    private void validateUpdate(StatementController controller, int[] newParts) {
+    private void setupBalancesTest(StatementController controller) {
+        int[] newParts = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
         validateUpdate(controller, newParts, newParts.length, 0, newParts);
     }
 

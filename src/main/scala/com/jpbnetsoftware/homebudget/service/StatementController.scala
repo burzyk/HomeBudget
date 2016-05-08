@@ -1,12 +1,10 @@
 package com.jpbnetsoftware.homebudget.service
 
 import java.time.LocalDate
-import java.util.{Date, Base64}
 
 import com.jpbnetsoftware.homebudget.data.OperationsRepository
-import com.jpbnetsoftware.homebudget.domain.{BankOperation, CryptoHelper, StatementParser}
+import com.jpbnetsoftware.homebudget.domain.{CryptoHelper, StatementParser}
 import com.jpbnetsoftware.homebudget.service.dto._
-import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation._
@@ -46,7 +44,6 @@ class StatementController {
 
     new StatementGetResponse(operations
       .map(x => new OperationDetails(x.id, x.date, x.description, x.amount))
-      .toList
       .asJava)
   }
 
@@ -66,13 +63,15 @@ class StatementController {
       effectiveTo)
 
     new StatementGetBalances(operations
-      .groupBy(x => x.date.getYear * 100 + x.date.getMonthValue)
+      .groupBy(x => (x.date.getYear, x.date.getMonthValue))
       .map(x => new BalanceDetails(
-        x._1 / 100,
-        x._1 % 100,
+        x._1._1,
+        x._1._2,
         x._2.map(_.amount).filter(_ < 0).sum * -1,
         x._2.map(_.amount).filter(_ > 0).sum))
       .toList
+      .sortBy(x => (x.year, + x.month))
+      .reverse
       .asJava)
   }
 
@@ -92,7 +91,6 @@ class StatementController {
 
     new StatementGetResponse(operations
       .map(x => new OperationDetails(x.id, x.date, x.description, x.amount))
-      .toList
       .asJava)
   }
 
@@ -111,7 +109,7 @@ class StatementController {
     // operations are sorted descending
     val from = newOperations.last.date
     val to = newOperations.apply(0).date
-    val toCompare = operationsRepository.getOperations(username, password, from, to).toList
+    val toCompare = operationsRepository.getOperations(username, password, from, to)
 
     val toInsert = newOperations.filterNot(x => toCompare.contains(x))
     operationsRepository.insertOperations(username, password, toInsert)
