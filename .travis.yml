@@ -3,9 +3,19 @@ language: java
 jdk:
   - oraclejdk8
 
+addons:
+  apt:
+    packages:
+      - sshpass
+
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+
 cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+after_success:
+  - export SSHPASS=$DEPLOY_PASSWORD
+  - sshpass -e scp $TRAVIS_BUILD_DIR/build/libs/homebudget-1.0-SNAPSHOT.jar $DEPLOY_USERNAME@homebudget.info:~/homebudget-1.0-SNAPSHOT-$TRAVIS_BUILD_NUMBER.jar
